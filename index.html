@@ -664,9 +664,33 @@
         let hoveredRingId = null;
         let hoveredSegmentIdx = null;
 
-        // Helper to get ring color based on theme and ring type
+        function getRingValue(ring, now, minProgress, hrProgress, yearProgress) {
+            if (ring.id === 'min') return minProgress / 60;
+            if (ring.id === 'hr') return hrProgress / 24;
+            if (ring.id === 'wday') return (now.getDay() + hrProgress / 24) / 7;
+            if (ring.id === 'day') return (now.getDate() - 1 + hrProgress / 24) / 31;
+            if (ring.id === 'month') return (now.getMonth() + (now.getDate() - 1) / 31) / 12;
+            if (['lunar', 'zodiac', 'events'].includes(ring.type)) return yearProgress;
+            return 0;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : {r: 239, g: 68, b: 68};
+        }
+
+        function resetShadow() {
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }
+
         function getRingColor(ring, theme) {
-            if (['ms', 'min', 'hr'].includes(ring.id)) return theme.ringColors.time;
+            if (['min', 'hr'].includes(ring.id)) return theme.ringColors.time;
             if (['wday', 'day', 'month'].includes(ring.id)) return theme.ringColors.calendar;
             if (['lunar', 'zodiac'].includes(ring.id) || ring.type === 'lunar' || ring.type === 'zodiac') return theme.ringColors.celestial;
             if (ring.type === 'events') return theme.ringColors.events;
@@ -798,13 +822,7 @@
                 const isHoveredRing = hoveredRingId === ring.id;
                 const ringColor = getRingColor(ring, theme);
 
-                let val = 0;
-                if (ring.id === 'min') val = minProgress / 60;
-                else if (ring.id === 'hr') val = hrProgress / 24;
-                else if (ring.id === 'wday') val = (now.getDay() + hrProgress/24) / 7;
-                else if (ring.id === 'day') val = (now.getDate() - 1 + hrProgress/24) / 31;
-                else if (ring.id === 'month') val = (now.getMonth() + (now.getDate()-1)/31) / 12;
-                else if (['lunar', 'zodiac', 'events'].includes(ring.type)) val = yearProgress;
+                const val = getRingValue(ring, now, minProgress, hrProgress, yearProgress);
 
                 let rotation = ring.static ? 0 : -val * TAU;
 
@@ -1159,13 +1177,7 @@
                     const r = ring.r * maxR;
                     if (Math.abs(dist - r) < ring.w + 10) {
                         hoveredRingId = ring.id;
-                        let rv = 0;
-                        if (ring.id === 'min') rv = minProgress/60;
-                        else if (ring.id === 'hr') rv = hrProgress/24;
-                        else if (ring.id === 'wday') rv = (now.getDay() + hrProgress/24)/7;
-                        else if (ring.id === 'day') rv = (now.getDate()-1+hrProgress/24)/31;
-                        else if (ring.id === 'month') rv = (now.getMonth() + (now.getDate()-1)/31)/12;
-                        else if (['lunar', 'zodiac', 'events'].includes(ring.type)) rv = yearProgress;
+                        const rv = getRingValue(ring, now, minProgress, hrProgress, yearProgress);
                         let rot = ring.static ? 0 : -rv * TAU;
                         let dataA = normScreenAngle - rot;
                         while (dataA < 0) dataA += TAU; while (dataA > TAU) dataA -= TAU;
