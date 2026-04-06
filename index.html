@@ -651,11 +651,8 @@
         ];
 
         function getMoonPhase(date) {
-            const knownNewMoon = new Date(2026, 0, 18).getTime();
-            const now = date.getTime();
-            const diffDays = (now - knownNewMoon) / (1000 * 60 * 60 * 24);
-            const cycle = 29.53059;
-            let phase = (diffDays % cycle) / cycle;
+            const diffDays = (date.getTime() - KNOWN_NEW_MOON) / MS_PER_DAY;
+            let phase = (diffDays % SYNODIC_MONTH) / SYNODIC_MONTH;
             if (phase < 0) phase += 1;
             return phase;
         }
