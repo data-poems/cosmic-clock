@@ -294,6 +294,7 @@
         themeSelect.addEventListener('change', (e) => {
             document.body.className = e.target.value;
             currentTheme = e.target.value;
+            cachedThemeName = null;
         });
 
         // === RESIZE / LAYOUT ===
