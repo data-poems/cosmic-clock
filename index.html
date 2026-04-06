@@ -1221,6 +1221,7 @@
             const cy_ = e.touches ? e.touches[0].clientY : e.clientY;
             interactionPos = { x: cx_ - rect.left, y: cy_ - rect.top };
         }
+        // === EVENT LISTENERS ===
         canvas.addEventListener('mousemove', setPos);
         canvas.addEventListener('touchstart', e => setPos(e));
         canvas.addEventListener('touchmove', e => { e.preventDefault(); setPos(e); }, {passive: false});
