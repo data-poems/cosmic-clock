@@ -735,7 +735,7 @@
             // Progress arc (filled portion)
             if (progress > 0 && progress <= 1) {
                 ctx.beginPath();
-                const startA = -Math.PI/2;
+                const startA = -HALF_PI;
                 const endA = startA + (progress * TAU);
                 ctx.arc(0, 0, r, startA, endA);
                 ctx.strokeStyle = color;
@@ -820,8 +820,8 @@
 
                 // Hover highlight for hovered segment
                 if (isHoveredRing && hoveredSegmentIdx !== null) {
-                    const a1 = (hoveredSegmentIdx / ring.divisions) * TAU - Math.PI/2;
-                    const a2 = ((hoveredSegmentIdx + 1) / ring.divisions) * TAU - Math.PI/2;
+                    const a1 = (hoveredSegmentIdx / ring.divisions) * TAU - HALF_PI;
+                    const a2 = ((hoveredSegmentIdx + 1) / ring.divisions) * TAU - HALF_PI;
                     ctx.beginPath(); ctx.arc(0, 0, r, a1, a2);
                     ctx.strokeStyle = theme.textColor; ctx.lineWidth = w + 6;
                     if (theme.glowEnabled) {
@@ -834,7 +834,7 @@
                 if (ring.labels) {
                     ctx.textAlign = "center"; ctx.textBaseline = "middle";
                     ring.labels.forEach((label, i) => {
-                        const a = ((i + 0.5) / ring.divisions) * TAU - Math.PI/2;
+                        const a = ((i + 0.5) / ring.divisions) * TAU - HALF_PI;
                         let diff = Math.abs((i/ring.divisions) - val);
                         if (diff > 0.5) diff = 1 - diff;
                         const isNow = diff < (0.5 / ring.divisions);
@@ -842,7 +842,7 @@
                         ctx.font = isNow ? "400 13px Montserrat" : "200 9px Montserrat";
                         ctx.save();
                         ctx.translate(Math.cos(a)*r, Math.sin(a)*r);
-                        ctx.rotate(a + Math.PI/2);
+                        ctx.rotate(a + HALF_PI);
                         ctx.fillText(label, 0, 0);
                         ctx.restore();
                     });
@@ -857,7 +857,7 @@
                     const moonInactive = theme.textDim;
 
                     for(let i=0; i<8; i++) {
-                        const a = (i/8) * TAU - Math.PI/2;
+                        const a = (i/8) * TAU - HALF_PI;
                         let pDiff = Math.abs((i/8) - currentPhase);
                         if (pDiff > 0.5) pDiff = 1 - pDiff;
                         const isActive = pDiff < 0.06;
@@ -883,12 +883,12 @@
                         } else if (i === 2) {
                             // First Quarter - right half
                             ctx.beginPath();
-                            ctx.arc(0, 0, moonR, -Math.PI/2, Math.PI/2);
+                            ctx.arc(0, 0, moonR, -HALF_PI, HALF_PI);
                             ctx.fill();
                         } else if (i === 6) {
                             // Last Quarter - left half
                             ctx.beginPath();
-                            ctx.arc(0, 0, moonR, Math.PI/2, -Math.PI/2);
+                            ctx.arc(0, 0, moonR, HALF_PI, -HALF_PI);
                             ctx.fill();
                         } else {
                             // Crescents (1,3,5,7) - small dot
@@ -904,7 +904,7 @@
                 if (ring.type === 'zodiac') {
                     const zodiacColor = getRingColor(ring, theme);
                     zodiacData.forEach((sign, i) => {
-                        const startA = (sign.start / 365) * TAU - Math.PI/2;
+                        const startA = (sign.start / 365) * TAU - HALF_PI;
                         const signEnd = zodiacData[i+1] ? zodiacData[i+1].start : 365 + zodiacData[0].start;
                         const isActiveSign = (dayOfYear >= sign.start && dayOfYear < signEnd) ||
                                             (sign.name === "Capricorn" && (dayOfYear >= 356 || dayOfYear < 20));
@@ -912,7 +912,7 @@
                         // Draw active sign highlight
                         if (isActiveSign) {
                             ctx.beginPath();
-                            ctx.arc(0, 0, r, startA, (signEnd/365)*TAU - Math.PI/2);
+                            ctx.arc(0, 0, r, startA, (signEnd/365)*TAU - HALF_PI);
                             ctx.strokeStyle = zodiacColor;
                             ctx.globalAlpha = 0.4;
                             ctx.lineWidth = w;
@@ -929,7 +929,7 @@
                         ctx.save();
                         const midA = startA + (Math.PI/12);
                         ctx.translate(Math.cos(midA)*r, Math.sin(midA)*r);
-                        ctx.rotate(midA + Math.PI/2);
+                        ctx.rotate(midA + HALF_PI);
 
                         // Reduced size for tighter constellation
                         const s = w * 0.5;
@@ -965,7 +965,7 @@
                 if (ring.type === 'events') {
                     allEvents.forEach(ev => {
                         const doy = (ev.date - new Date(2026,0,0)) / 86400000;
-                        const a = (doy / 365) * TAU - Math.PI/2;
+                        const a = (doy / 365) * TAU - HALF_PI;
                         const isToday = ev.date.toDateString() === now.toDateString();
                         const eventColor = eventColors[ev.type] || getRingColor(ring, theme);
 
@@ -1128,7 +1128,7 @@
 
             // Swiss Railway second hand
             if (theme.secondHand) {
-                const secAngle = (sec / 60) * TAU - Math.PI/2;
+                const secAngle = (sec / 60) * TAU - HALF_PI;
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(secAngle);
@@ -1150,7 +1150,7 @@
             if (interactionPos) {
                 const dx = interactionPos.x - cx; const dy = interactionPos.y - cy;
                 const dist = Math.sqrt(dx*dx + dy*dy);
-                const screenAngle = Math.atan2(dy, dx) + Math.PI/2;
+                const screenAngle = Math.atan2(dy, dx) + HALF_PI;
                 let normScreenAngle = screenAngle < 0 ? screenAngle + TAU : screenAngle;
                 hoveredRingId = null; hoveredSegmentIdx = null;
                 rings.forEach(ring => {
