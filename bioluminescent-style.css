@@ -572,7 +572,7 @@ body.theme-skeuo-platinum .huge-time {
                  2px 2px 4px rgba(0,0,0,0.1);
 }
 body.theme-skeuo-platinum .date-display {
-    color: #6a7a8a;
+    color: #4a5a6a;
     opacity: 1;
 }
 body.theme-skeuo-platinum #tooltip,
@@ -593,9 +593,9 @@ body.theme-skeuo-platinum .theme-selector select {
 body.theme-skeuo-platinum .info-icon {
     background: linear-gradient(145deg, #ffffff, #e8ecf0);
     border: 1px solid #c0c8d0;
-    color: #6a7a8a;
+    color: #4a5a6a;
 }
-body.theme-skeuo-platinum .key-item { color: #6a7a8a; }
+body.theme-skeuo-platinum .key-item { color: #4a5a6a; }
 
 /* --- THEME: SKEUOMORPHISM OBSIDIAN --- */
 body.theme-skeuo-obsidian {
