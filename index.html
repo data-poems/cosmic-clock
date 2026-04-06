@@ -291,10 +291,21 @@
             return cachedThemeConfig;
         }
 
+        // Restore saved theme from localStorage
+        try {
+            const saved = localStorage.getItem('cosmic-clock-theme');
+            if (saved && themeConfigs[saved] !== undefined) {
+                currentTheme = saved;
+                document.body.className = saved;
+                themeSelect.value = saved;
+            }
+        } catch(e) {}
+
         themeSelect.addEventListener('change', (e) => {
             document.body.className = e.target.value;
             currentTheme = e.target.value;
             cachedThemeName = null;
+            try { localStorage.setItem('cosmic-clock-theme', currentTheme); } catch(e) {}
         });
 
         // === RESIZE / LAYOUT ===
