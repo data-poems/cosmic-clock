@@ -78,7 +78,7 @@
         </div>
     </div>
 
-    <canvas id="canvas"></canvas>
+    <canvas id="canvas" role="img" aria-label="Real-time cosmic clock visualization showing concentric rings for time, calendar, lunar phases, zodiac constellations, and 2026 events"></canvas>
     <div id="tooltip"></div>
 
     <script>
@@ -1209,6 +1209,7 @@
         const infoIcon = document.getElementById('infoIcon');
         const infoPopup = document.getElementById('infoPopup');
         infoIcon.addEventListener('click', (e) => { e.preventDefault(); infoPopup.classList.toggle('visible'); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { infoPopup.classList.remove('visible'); hideTooltip(); } });
     </script>
     <!-- GoatCounter Analytics -->
     <script data-goatcounter="https://stats.dr.eamer.dev/count"
