@@ -497,6 +497,7 @@
             ctx.scale(dpr, dpr);
             cx = width / 2;
             cy = height / 2;
+            isMobile = width <= MOBILE_BREAKPOINT;
         }
         window.addEventListener('resize', resize);
         resize();
@@ -800,9 +801,12 @@
             const dayOfYear = (now - new Date(now.getFullYear(), 0, 0)) / MS_PER_DAY;
             const yearProgress = dayOfYear / DAYS_IN_YEAR;
 
-            document.getElementById('clock-display').innerText = now.toLocaleTimeString('en-GB');
-            document.getElementById('date-display').innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('progress-display').innerText = `YEAR PROGRESS: ${(yearProgress*100).toFixed(4)}%`;
+            if (sec !== lastDisplaySecond) {
+                lastDisplaySecond = sec;
+                clockDisplay.innerText = now.toLocaleTimeString('en-GB');
+                dateDisplay.innerText = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                progressDisplay.innerText = `YEAR PROGRESS: ${(yearProgress*100).toFixed(4)}%`;
+            }
 
             const maxR = Math.min(width, height) / 2 * (width < MOBILE_BREAKPOINT ? 0.82 : 0.9);
 
@@ -829,7 +833,7 @@
                 ctx.rotate(rotation);
 
                 // Draw themed ring (background track + progress)
-                if (['ms','min','hr','wday','day','month'].includes(ring.id)) {
+                if (['min','hr','wday','day','month'].includes(ring.id)) {
                     drawThemedRing(r, w, ringColor, val, theme, isHoveredRing);
                 } else {
                     // For special rings (lunar, zodiac, events), just draw background
@@ -1182,7 +1186,7 @@
         // === INTERACTION / TOOLTIP ===
         function showTooltipContent(ring, idx, x, y, dataA) {
             tooltip.style.display = 'block';
-            if (window.innerWidth > 768) { tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px'; }
+            if (!isMobile) { tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px'; }
             let title = ring.id.toUpperCase(); let body = `Index: ${idx + 1}`;
             if (ring.id === 'month' && ring.labels[idx]) { title = "MONTH"; body = ring.labels[idx]; }
             else if (ring.id === 'wday' && ring.labels[idx]) { title = "WEEKDAY"; body = ring.labels[idx]; }
