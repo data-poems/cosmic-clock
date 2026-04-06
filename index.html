@@ -82,17 +82,36 @@
     <div id="tooltip"></div>
 
     <script>
+        // === DOM REFERENCES ===
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const tooltip = document.getElementById('tooltip');
         const themeSelect = document.getElementById('themeSelect');
-        
+        const clockDisplay = document.getElementById('clock-display');
+        const dateDisplay = document.getElementById('date-display');
+        const progressDisplay = document.getElementById('progress-display');
+
+        // === CONSTANTS ===
+        const TAU = Math.PI * 2;
+        const HALF_PI = Math.PI / 2;
+        const MS_PER_DAY = 86400000;
+        const SYNODIC_MONTH = 29.53059;
+        const DAYS_IN_YEAR = 365;
+        const MOBILE_BREAKPOINT = 768;
+        // NOTE: New moon reference date. README says Jan 20; code uses Jan 18.
+        // NASA/USNO lists Jan 29, 2026 12:36 UTC as the actual new moon.
+        const KNOWN_NEW_MOON = new Date(2026, 0, 18).getTime();
+        // Day 0 of month 0 = Dec 31, 2025. Subtracting from a 2026 date gives 1-based day-of-year.
+        const YEAR_BASE = new Date(2026, 0, 0);
+
         let width, height, cx, cy;
         let dpr = window.devicePixelRatio || 1;
         let interactionPos = null;
         let currentTheme = 'theme-bio';
+        let isMobile = false;
+        let lastDisplaySecond = -1;
 
-        // Theme configurations for canvas rendering
+        // === THEME CONFIGURATIONS ===
         const themeConfigs = {
             'theme-bio': {
                 ringColors: { time: '#ef4444', calendar: '#10b981', celestial: '#f59e0b', events: '#3b82f6' },
