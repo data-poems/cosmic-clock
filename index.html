@@ -577,6 +577,7 @@
         ].sort((a,b) => a.date - b.date);
 
         // Accurate zodiac constellation data
+        // === ZODIAC DATA ===
         const zodiacData = [
             {
                 name: "Aries", start: 80,
@@ -640,6 +641,7 @@
             }
         ].sort((a,b) => a.start - b.start);
 
+        // === RING DEFINITIONS ===
         const rings = [
             { id: 'min', divisions: 60, r: 0.18, w: 12, color: '#ef4444', static: true },
             { id: 'hr',  divisions: 24, r: 0.24, w: 14, color: '#ef4444', static: true },
@@ -651,6 +653,7 @@
             { id: 'events', divisions: DAYS_IN_YEAR, r: 0.78, w: 10, color: '#3b82f6', type: 'events' }
         ];
 
+        // === RENDERING HELPERS ===
         function getMoonPhase(date) {
             const diffDays = (date.getTime() - KNOWN_NEW_MOON) / MS_PER_DAY;
             let phase = (diffDays % SYNODIC_MONTH) / SYNODIC_MONTH;
@@ -759,6 +762,7 @@
             }
         }
 
+        // === MAIN DRAW LOOP ===
         function draw() {
             const theme = getThemeConfig();
 
