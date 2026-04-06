@@ -112,372 +112,183 @@
         let lastDisplaySecond = -1;
 
         // === THEME CONFIGURATIONS ===
+        const defaultThemeConfig = {
+            ringColors: { time: '#ef4444', calendar: '#10b981', celestial: '#f59e0b', events: '#3b82f6' },
+            bgColor: '#050505', textColor: '#ffffff',
+            textDim: 'rgba(255,255,255,0.5)', lineColor: 'rgba(255,255,255,0.3)',
+            centerColor: '#ef4444',
+            glowEnabled: true, shadowBlur: 15,
+            ringStyle: 'glow', ringOpacity: 0.12, activeOpacity: 1.0,
+            bezelWidth: 3, bezelLight: 'rgba(255,255,255,0.4)', bezelDark: 'rgba(0,0,0,0.6)',
+            neuLightShadow: 'rgba(255,255,255,0.7)', neuDarkShadow: 'rgba(163,177,198,0.7)',
+            secondHand: false
+        };
+
+        // Each theme only specifies what differs from defaults
         const themeConfigs = {
-            'theme-bio': {
-                ringColors: { time: '#ef4444', calendar: '#10b981', celestial: '#f59e0b', events: '#3b82f6' },
-                bgColor: '#050505',
-                textColor: '#ffffff',
-                textDim: 'rgba(255,255,255,0.5)',
-                lineColor: 'rgba(255,255,255,0.3)',
-                centerColor: '#ef4444',
-                glowEnabled: true,
-                shadowBlur: 15,
-                ringStyle: 'glow', // glow, flat, beveled, soft
-                ringOpacity: 0.12,
-                activeOpacity: 1.0
-            },
+            'theme-bio': {},
             'theme-glass': {
                 ringColors: { time: '#60a5fa', calendar: '#34d399', celestial: '#fbbf24', events: '#a78bfa' },
-                bgColor: '#1a1c2c',
-                textColor: '#ffffff',
-                textDim: 'rgba(255,255,255,0.4)',
-                lineColor: 'rgba(255,255,255,0.2)',
-                centerColor: '#60a5fa',
-                glowEnabled: true,
-                shadowBlur: 20,
-                ringStyle: 'glow',
-                ringOpacity: 0.08,
-                activeOpacity: 0.9
+                bgColor: '#1a1c2c', textDim: 'rgba(255,255,255,0.4)', lineColor: 'rgba(255,255,255,0.2)',
+                centerColor: '#60a5fa', shadowBlur: 20, ringOpacity: 0.08, activeOpacity: 0.9
             },
             'theme-glass-frost': {
                 ringColors: { time: '#0984e3', calendar: '#00b894', celestial: '#fdcb6e', events: '#6c5ce7' },
-                bgColor: '#dfe6e9',
-                textColor: '#2d3436',
-                textDim: 'rgba(45,52,54,0.5)',
-                lineColor: 'rgba(45,52,54,0.2)',
-                centerColor: '#0984e3',
-                glowEnabled: false,
-                shadowBlur: 8,
-                ringStyle: 'soft',
-                ringOpacity: 0.15,
-                activeOpacity: 0.7
+                bgColor: '#dfe6e9', textColor: '#2d3436', textDim: 'rgba(45,52,54,0.5)',
+                lineColor: 'rgba(45,52,54,0.2)', centerColor: '#0984e3',
+                glowEnabled: false, shadowBlur: 8, ringStyle: 'soft', ringOpacity: 0.15, activeOpacity: 0.7
             },
             'theme-glass-aurora': {
                 ringColors: { time: '#00d9ff', calendar: '#00ffa3', celestial: '#ff00ff', events: '#7c3aed' },
-                bgColor: '#0f0f23',
-                textColor: '#ffffff',
-                textDim: 'rgba(255,255,255,0.5)',
-                lineColor: 'rgba(0,217,255,0.3)',
-                centerColor: '#00d9ff',
-                glowEnabled: true,
-                shadowBlur: 25,
-                ringStyle: 'aurora',
-                ringOpacity: 0.1,
-                activeOpacity: 1.0
+                bgColor: '#0f0f23', lineColor: 'rgba(0,217,255,0.3)', centerColor: '#00d9ff',
+                shadowBlur: 25, ringStyle: 'aurora', ringOpacity: 0.1
             },
             'theme-skeuo': {
                 ringColors: { time: '#ff6b6b', calendar: '#4ecdc4', celestial: '#ffe66d', events: '#6b5b95' },
-                bgColor: '#1a1a1a',
-                textColor: '#f0f0f0',
-                textDim: 'rgba(240,240,240,0.6)',
-                lineColor: 'rgba(255,255,255,0.2)',
-                centerColor: '#ff6b6b',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'beveled',
-                ringOpacity: 0.25,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,255,255,0.4)',
-                bezelDark: 'rgba(0,0,0,0.6)'
+                bgColor: '#1a1a1a', textColor: '#f0f0f0', textDim: 'rgba(240,240,240,0.6)',
+                lineColor: 'rgba(255,255,255,0.2)', centerColor: '#ff6b6b',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.25
             },
             'theme-skeuo-brass': {
                 ringColors: { time: '#ffd700', calendar: '#50c878', celestial: '#ff8c00', events: '#4169e1' },
-                bgColor: '#1a1408',
-                textColor: '#f4d794',
-                textDim: 'rgba(244,215,148,0.6)',
-                lineColor: 'rgba(255,215,0,0.25)',
-                centerColor: '#ffd700',
-                glowEnabled: true,
-                shadowBlur: 15,
-                ringStyle: 'beveled',
-                ringOpacity: 0.28,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,215,0,0.5)',
-                bezelDark: 'rgba(0,0,0,0.65)'
+                bgColor: '#1a1408', textColor: '#f4d794', textDim: 'rgba(244,215,148,0.6)',
+                lineColor: 'rgba(255,215,0,0.25)', centerColor: '#ffd700',
+                ringStyle: 'beveled', ringOpacity: 0.28,
+                bezelLight: 'rgba(255,215,0,0.5)', bezelDark: 'rgba(0,0,0,0.65)'
             },
             'theme-skeuo-chrome': {
                 ringColors: { time: '#00bfff', calendar: '#7fff00', celestial: '#ff1493', events: '#9370db' },
-                bgColor: '#12151a',
-                textColor: '#e8ecf0',
-                textDim: 'rgba(232,236,240,0.6)',
-                lineColor: 'rgba(0,191,255,0.2)',
-                centerColor: '#00bfff',
-                glowEnabled: true,
-                shadowBlur: 8,
-                ringStyle: 'beveled',
-                ringOpacity: 0.22,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,255,255,0.45)',
-                bezelDark: 'rgba(0,0,0,0.55)'
+                bgColor: '#12151a', textColor: '#e8ecf0', textDim: 'rgba(232,236,240,0.6)',
+                lineColor: 'rgba(0,191,255,0.2)', centerColor: '#00bfff',
+                shadowBlur: 8, ringStyle: 'beveled', ringOpacity: 0.22,
+                bezelLight: 'rgba(255,255,255,0.45)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-cockpit': {
                 ringColors: { time: '#00ff00', calendar: '#00ffff', celestial: '#ff4500', events: '#ffff00' },
-                bgColor: '#0a0a08',
-                textColor: '#00ff00',
-                textDim: 'rgba(0,255,0,0.6)',
-                lineColor: 'rgba(0,255,0,0.35)',
-                centerColor: '#ff4500',
-                glowEnabled: true,
-                shadowBlur: 18,
-                ringStyle: 'cockpit',
-                ringOpacity: 0.18,
-                activeOpacity: 1.0,
-                bezelWidth: 2,
-                bezelLight: 'rgba(0,255,0,0.4)',
-                bezelDark: 'rgba(0,0,0,0.75)'
+                bgColor: '#0a0a08', textColor: '#00ff00', textDim: 'rgba(0,255,0,0.6)',
+                lineColor: 'rgba(0,255,0,0.35)', centerColor: '#ff4500',
+                shadowBlur: 18, ringStyle: 'cockpit', ringOpacity: 0.18,
+                bezelWidth: 2, bezelLight: 'rgba(0,255,0,0.4)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-bronze': {
                 ringColors: { time: '#cd7f32', calendar: '#228b22', celestial: '#daa520', events: '#4682b4' },
-                bgColor: '#151210',
-                textColor: '#deb887',
-                textDim: 'rgba(222,184,135,0.6)',
-                lineColor: 'rgba(205,127,50,0.25)',
-                centerColor: '#cd7f32',
-                glowEnabled: true,
-                shadowBlur: 12,
-                ringStyle: 'beveled',
-                ringOpacity: 0.26,
-                activeOpacity: 1.0,
-                bezelWidth: 4,
-                bezelLight: 'rgba(222,184,135,0.5)',
-                bezelDark: 'rgba(0,0,0,0.6)'
+                bgColor: '#151210', textColor: '#deb887', textDim: 'rgba(222,184,135,0.6)',
+                lineColor: 'rgba(205,127,50,0.25)', centerColor: '#cd7f32',
+                shadowBlur: 12, ringStyle: 'beveled', ringOpacity: 0.26,
+                bezelWidth: 4, bezelLight: 'rgba(222,184,135,0.5)'
             },
             'theme-skeuo-copper': {
                 ringColors: { time: '#ff7f50', calendar: '#20b2aa', celestial: '#ffa07a', events: '#6495ed' },
-                bgColor: '#18100e',
-                textColor: '#f4a460',
-                textDim: 'rgba(244,164,96,0.6)',
-                lineColor: 'rgba(255,127,80,0.25)',
-                centerColor: '#ff7f50',
-                glowEnabled: true,
-                shadowBlur: 20,
-                ringStyle: 'beveled',
-                ringOpacity: 0.24,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,160,122,0.5)',
-                bezelDark: 'rgba(0,0,0,0.55)'
+                bgColor: '#18100e', textColor: '#f4a460', textDim: 'rgba(244,164,96,0.6)',
+                lineColor: 'rgba(255,127,80,0.25)', centerColor: '#ff7f50',
+                shadowBlur: 20, ringStyle: 'beveled', ringOpacity: 0.24,
+                bezelLight: 'rgba(255,160,122,0.5)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-titanium': {
                 ringColors: { time: '#87ceeb', calendar: '#98fb98', celestial: '#dda0dd', events: '#f0e68c' },
-                bgColor: '#101418',
-                textColor: '#d3d3d3',
-                textDim: 'rgba(211,211,211,0.6)',
-                lineColor: 'rgba(135,206,235,0.2)',
-                centerColor: '#87ceeb',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'beveled',
-                ringOpacity: 0.22,
-                activeOpacity: 1.0,
-                bezelWidth: 2,
-                bezelLight: 'rgba(211,211,211,0.35)',
-                bezelDark: 'rgba(0,0,0,0.55)'
+                bgColor: '#101418', textColor: '#d3d3d3', textDim: 'rgba(211,211,211,0.6)',
+                lineColor: 'rgba(135,206,235,0.2)', centerColor: '#87ceeb',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.22,
+                bezelWidth: 2, bezelLight: 'rgba(211,211,211,0.35)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-rosegold': {
                 ringColors: { time: '#ffb6c1', calendar: '#98d8c8', celestial: '#f7dc6f', events: '#bb8fce' },
-                bgColor: '#1a1214',
-                textColor: '#ffc0cb',
-                textDim: 'rgba(255,192,203,0.6)',
-                lineColor: 'rgba(255,182,193,0.25)',
-                centerColor: '#ff69b4',
-                glowEnabled: true,
-                shadowBlur: 14,
-                ringStyle: 'beveled',
-                ringOpacity: 0.24,
-                activeOpacity: 1.0,
-                bezelWidth: 2,
-                bezelLight: 'rgba(255,192,203,0.45)',
-                bezelDark: 'rgba(0,0,0,0.5)'
+                bgColor: '#1a1214', textColor: '#ffc0cb', textDim: 'rgba(255,192,203,0.6)',
+                lineColor: 'rgba(255,182,193,0.25)', centerColor: '#ff69b4',
+                shadowBlur: 14, ringStyle: 'beveled', ringOpacity: 0.24,
+                bezelWidth: 2, bezelLight: 'rgba(255,192,203,0.45)', bezelDark: 'rgba(0,0,0,0.5)'
             },
             'theme-skeuo-gunmetal': {
                 ringColors: { time: '#dc143c', calendar: '#32cd32', celestial: '#ffa500', events: '#1e90ff' },
-                bgColor: '#0e1012',
-                textColor: '#a9a9a9',
-                textDim: 'rgba(169,169,169,0.6)',
-                lineColor: 'rgba(169,169,169,0.15)',
-                centerColor: '#dc143c',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'beveled',
-                ringOpacity: 0.24,
-                activeOpacity: 1.0,
-                bezelWidth: 4,
-                bezelLight: 'rgba(169,169,169,0.25)',
-                bezelDark: 'rgba(0,0,0,0.7)'
+                bgColor: '#0e1012', textColor: '#a9a9a9', textDim: 'rgba(169,169,169,0.6)',
+                lineColor: 'rgba(169,169,169,0.15)', centerColor: '#dc143c',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
+                bezelWidth: 4, bezelLight: 'rgba(169,169,169,0.25)', bezelDark: 'rgba(0,0,0,0.7)'
             },
             'theme-skeuo-platinum': {
                 ringColors: { time: '#4169e1', calendar: '#2e8b57', celestial: '#ff6347', events: '#9932cc' },
-                bgColor: '#f5f5f5',
-                textColor: '#2f4f4f',
-                textDim: 'rgba(47,79,79,0.6)',
-                lineColor: 'rgba(65,105,225,0.2)',
-                centerColor: '#4169e1',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'beveled',
-                ringOpacity: 0.3,
-                activeOpacity: 0.9,
-                bezelWidth: 2,
-                bezelLight: 'rgba(255,255,255,0.9)',
-                bezelDark: 'rgba(0,0,0,0.2)'
+                bgColor: '#f5f5f5', textColor: '#2f4f4f', textDim: 'rgba(47,79,79,0.6)',
+                lineColor: 'rgba(65,105,225,0.2)', centerColor: '#4169e1',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.3, activeOpacity: 0.9,
+                bezelWidth: 2, bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)'
             },
             'theme-skeuo-obsidian': {
                 ringColors: { time: '#9400d3', calendar: '#00ced1', celestial: '#ff00ff', events: '#7b68ee' },
-                bgColor: '#080808',
-                textColor: '#e6e6fa',
-                textDim: 'rgba(230,230,250,0.6)',
-                lineColor: 'rgba(148,0,211,0.25)',
-                centerColor: '#9400d3',
-                glowEnabled: true,
-                shadowBlur: 25,
-                ringStyle: 'beveled',
-                ringOpacity: 0.2,
-                activeOpacity: 1.0,
-                bezelWidth: 2,
-                bezelLight: 'rgba(230,230,250,0.2)',
-                bezelDark: 'rgba(0,0,0,0.75)'
+                bgColor: '#080808', textColor: '#e6e6fa', textDim: 'rgba(230,230,250,0.6)',
+                lineColor: 'rgba(148,0,211,0.25)', centerColor: '#9400d3',
+                shadowBlur: 25, ringStyle: 'beveled', ringOpacity: 0.2,
+                bezelWidth: 2, bezelLight: 'rgba(230,230,250,0.2)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-amber': {
                 ringColors: { time: '#ff8c00', calendar: '#32cd32', celestial: '#ffd700', events: '#ff4500' },
-                bgColor: '#141008',
-                textColor: '#ffd700',
-                textDim: 'rgba(255,215,0,0.6)',
-                lineColor: 'rgba(255,140,0,0.3)',
-                centerColor: '#ff8c00',
-                glowEnabled: true,
-                shadowBlur: 22,
-                ringStyle: 'beveled',
-                ringOpacity: 0.24,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,215,0,0.55)',
-                bezelDark: 'rgba(0,0,0,0.55)'
+                bgColor: '#141008', textColor: '#ffd700', textDim: 'rgba(255,215,0,0.6)',
+                lineColor: 'rgba(255,140,0,0.3)', centerColor: '#ff8c00',
+                shadowBlur: 22, ringStyle: 'beveled', ringOpacity: 0.24,
+                bezelLight: 'rgba(255,215,0,0.55)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-jade': {
                 ringColors: { time: '#00fa9a', calendar: '#40e0d0', celestial: '#adff2f', events: '#00bfff' },
-                bgColor: '#080f0c',
-                textColor: '#98fb98',
-                textDim: 'rgba(152,251,152,0.6)',
-                lineColor: 'rgba(0,250,154,0.25)',
-                centerColor: '#00fa9a',
-                glowEnabled: true,
-                shadowBlur: 15,
-                ringStyle: 'beveled',
-                ringOpacity: 0.22,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(152,251,152,0.45)',
-                bezelDark: 'rgba(0,0,0,0.6)'
+                bgColor: '#080f0c', textColor: '#98fb98', textDim: 'rgba(152,251,152,0.6)',
+                lineColor: 'rgba(0,250,154,0.25)', centerColor: '#00fa9a',
+                ringStyle: 'beveled', ringOpacity: 0.22,
+                bezelLight: 'rgba(152,251,152,0.45)'
             },
             'theme-skeuo-onyx': {
                 ringColors: { time: '#ffd700', calendar: '#c0c0c0', celestial: '#ff0000', events: '#00ffff' },
-                bgColor: '#050505',
-                textColor: '#ffd700',
-                textDim: 'rgba(255,215,0,0.6)',
-                lineColor: 'rgba(255,215,0,0.3)',
-                centerColor: '#ffd700',
-                glowEnabled: true,
-                shadowBlur: 18,
-                ringStyle: 'beveled',
-                ringOpacity: 0.2,
-                activeOpacity: 1.0,
-                bezelWidth: 3,
-                bezelLight: 'rgba(255,215,0,0.45)',
-                bezelDark: 'rgba(0,0,0,0.7)'
+                textColor: '#ffd700', textDim: 'rgba(255,215,0,0.6)',
+                lineColor: 'rgba(255,215,0,0.3)', centerColor: '#ffd700',
+                shadowBlur: 18, ringStyle: 'beveled', ringOpacity: 0.2,
+                bezelLight: 'rgba(255,215,0,0.45)', bezelDark: 'rgba(0,0,0,0.7)'
             },
             'theme-swiss': {
                 ringColors: { time: '#d52b1e', calendar: '#000000', celestial: '#d52b1e', events: '#000000' },
-                bgColor: '#f0f0f0',
-                textColor: '#000000',
-                textDim: 'rgba(0,0,0,0.5)',
-                lineColor: 'rgba(0,0,0,0.2)',
-                centerColor: '#d52b1e',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'flat',
-                ringOpacity: 0.15,
-                activeOpacity: 1.0
+                bgColor: '#f0f0f0', textColor: '#000000', textDim: 'rgba(0,0,0,0.5)',
+                lineColor: 'rgba(0,0,0,0.2)', centerColor: '#d52b1e',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.15
             },
             'theme-swiss-railway': {
                 ringColors: { time: '#ff0000', calendar: '#000000', celestial: '#000000', events: '#ff0000' },
-                bgColor: '#ffffff',
-                textColor: '#000000',
-                textDim: 'rgba(0,0,0,0.4)',
-                lineColor: 'rgba(0,0,0,0.15)',
-                centerColor: '#ff0000',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'flat',
-                ringOpacity: 0.1,
-                activeOpacity: 1.0,
-                secondHand: true
+                bgColor: '#ffffff', textColor: '#000000', textDim: 'rgba(0,0,0,0.4)',
+                lineColor: 'rgba(0,0,0,0.15)', centerColor: '#ff0000',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.1, secondHand: true
             },
             'theme-swiss-poster': {
                 ringColors: { time: '#ff3b30', calendar: '#ffffff', celestial: '#ff3b30', events: '#ffffff' },
-                bgColor: '#1a1a1a',
-                textColor: '#ffffff',
-                textDim: 'rgba(255,255,255,0.5)',
-                lineColor: 'rgba(255,59,48,0.4)',
-                centerColor: '#ff3b30',
-                glowEnabled: true,
-                shadowBlur: 10,
-                ringStyle: 'bold',
-                ringOpacity: 0.15,
-                activeOpacity: 1.0
+                bgColor: '#1a1a1a', lineColor: 'rgba(255,59,48,0.4)', centerColor: '#ff3b30',
+                shadowBlur: 10, ringStyle: 'bold', ringOpacity: 0.15
             },
             'theme-neu': {
                 ringColors: { time: '#6d5dfc', calendar: '#a3b1c6', celestial: '#6d5dfc', events: '#a3b1c6' },
-                bgColor: '#e0e5ec',
-                textColor: '#444444',
-                textDim: 'rgba(68,68,68,0.5)',
-                lineColor: 'rgba(68,68,68,0.15)',
-                centerColor: '#6d5dfc',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'neumorphic',
-                ringOpacity: 0.2,
-                activeOpacity: 0.8,
-                neuLightShadow: 'rgba(255,255,255,0.7)',
-                neuDarkShadow: 'rgba(163,177,198,0.7)'
+                bgColor: '#e0e5ec', textColor: '#444444', textDim: 'rgba(68,68,68,0.5)',
+                lineColor: 'rgba(68,68,68,0.15)', centerColor: '#6d5dfc',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.2, activeOpacity: 0.8
             },
             'theme-neu-light': {
                 ringColors: { time: '#6d5dfc', calendar: '#7f8c8d', celestial: '#9b59b6', events: '#3498db' },
-                bgColor: '#e0e5ec',
-                textColor: '#444444',
-                textDim: 'rgba(68,68,68,0.5)',
-                lineColor: 'rgba(68,68,68,0.1)',
-                centerColor: '#6d5dfc',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'neumorphic',
-                ringOpacity: 0.25,
-                activeOpacity: 0.85,
-                neuLightShadow: 'rgba(255,255,255,0.8)',
-                neuDarkShadow: 'rgba(163,177,198,0.6)'
+                bgColor: '#e0e5ec', textColor: '#444444', textDim: 'rgba(68,68,68,0.5)',
+                lineColor: 'rgba(68,68,68,0.1)', centerColor: '#6d5dfc',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.25, activeOpacity: 0.85,
+                neuLightShadow: 'rgba(255,255,255,0.8)', neuDarkShadow: 'rgba(163,177,198,0.6)'
             },
             'theme-neu-dark': {
                 ringColors: { time: '#7c6aef', calendar: '#5a5a6e', celestial: '#9b7aef', events: '#6a6aef' },
-                bgColor: '#2d2d3a',
-                textColor: '#e0e0e0',
-                textDim: 'rgba(224,224,224,0.5)',
-                lineColor: 'rgba(224,224,224,0.1)',
-                centerColor: '#7c6aef',
-                glowEnabled: false,
-                shadowBlur: 0,
-                ringStyle: 'neumorphic-dark',
-                ringOpacity: 0.2,
-                activeOpacity: 0.9,
-                neuLightShadow: 'rgba(60,60,80,0.5)',
-                neuDarkShadow: 'rgba(0,0,0,0.6)'
+                bgColor: '#2d2d3a', textColor: '#e0e0e0', textDim: 'rgba(224,224,224,0.5)',
+                lineColor: 'rgba(224,224,224,0.1)', centerColor: '#7c6aef',
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic-dark', ringOpacity: 0.2, activeOpacity: 0.9,
+                neuLightShadow: 'rgba(60,60,80,0.5)', neuDarkShadow: 'rgba(0,0,0,0.6)'
             }
         };
 
+        let cachedThemeConfig = null, cachedThemeName = null;
         function getThemeConfig() {
-            return themeConfigs[currentTheme] || themeConfigs['theme-bio'];
+            if (cachedThemeName === currentTheme) return cachedThemeConfig;
+            const overrides = themeConfigs[currentTheme] || {};
+            cachedThemeConfig = { ...defaultThemeConfig, ...overrides };
+            if (overrides.ringColors) {
+                cachedThemeConfig.ringColors = { ...defaultThemeConfig.ringColors, ...overrides.ringColors };
+            }
+            cachedThemeName = currentTheme;
+            return cachedThemeConfig;
         }
 
         themeSelect.addEventListener('change', (e) => {
