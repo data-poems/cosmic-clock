@@ -485,6 +485,7 @@
             currentTheme = e.target.value;
         });
 
+        // === RESIZE / LAYOUT ===
         function resize() {
             width = window.innerWidth;
             height = window.innerHeight;
@@ -500,7 +501,7 @@
         window.addEventListener('resize', resize);
         resize();
 
-        // Event type colors
+        // === EVENT DATA ===
         const eventColors = {
             meteor: '#a855f7',      // Purple
             eclipse: '#ef4444',     // Red
