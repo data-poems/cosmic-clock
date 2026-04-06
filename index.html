@@ -964,7 +964,7 @@
 
                 if (ring.type === 'events') {
                     allEvents.forEach(ev => {
-                        const doy = (ev.date - new Date(2026,0,0)) / 86400000;
+                        const doy = (ev.date - YEAR_BASE) / MS_PER_DAY;
                         const a = (doy / 365) * TAU - HALF_PI;
                         const isToday = ev.date.toDateString() === now.toDateString();
                         const eventColor = eventColors[ev.type] || getRingColor(ring, theme);
@@ -1196,7 +1196,7 @@
                 const dCheck = (dataA / (TAU)) * 365;
                 let closest = null; let minD = 3;
                 allEvents.forEach(ev => {
-                    const ed = (ev.date - new Date(2026,0,0)) / 86400000;
+                    const ed = (ev.date - YEAR_BASE) / MS_PER_DAY;
                     let d = Math.abs(ed - dCheck); if (d > 300) d = 365 - d;
                     if (d < minD) { minD = d; closest = ev; }
                 });
