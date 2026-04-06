@@ -1093,6 +1093,46 @@ body.theme-glass-aurora .info-icon {
 }
 
 /* ========================================
+   EXPLICIT BIO THEME (default)
+   ======================================== */
+
+body.theme-bio {
+    --bg-color: #050505;
+    --text-color: #ffffff;
+    --panel-bg: rgba(10, 10, 10, 0.85);
+    --border-color: rgba(255, 255, 255, 0.15);
+    --glow-color: #06b6d4;
+    --accent-color: #f59e0b;
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+select:focus-visible,
+.info-icon:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body { transition: none !important; }
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* ========================================
    RESPONSIVE STYLES
    ======================================== */
 
@@ -1104,4 +1144,11 @@ body.theme-glass-aurora .info-icon {
     .legend-key { display: none; }
     .info-popup { bottom: 80px; right: 16px; }
     .info-icon { bottom: 20px; right: 16px; }
+}
+
+@media (max-width: 480px) {
+    .huge-time { font-size: 32px; }
+    body.theme-swiss-poster .huge-time { font-size: 32px; }
+    .date-display { font-size: 16px; }
+    .time-display { top: 12px; left: 12px; right: 12px; }
 }
