@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cosmic Clock 2026</title>
+    <meta name="description" content="A real-time visualization of time at every scale — milliseconds to months, lunar phases, zodiac constellations, and 2026 world events rendered as concentric rings on canvas.">
+    <meta name="author" content="Luke Steuber">
+    <meta name="theme-color" content="#050505">
+    <meta property="og:title" content="Cosmic Clock 2026">
+    <meta property="og:description" content="Watch the year unfold through concentric rings tracking time, lunar phases, zodiac constellations, and major events of 2026.">
+    <meta property="og:url" content="https://dr.eamer.dev/datavis/poems/cosmic-clock/">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://dr.eamer.dev/datavis/poems/cosmic-clock/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tenor+Sans&family=Montserrat:wght@200;300;400;700&display=swap" rel="stylesheet">
@@ -13,6 +21,8 @@
 </head>
 <body class="theme-bio">
 
+    <h1 class="sr-only">Cosmic Clock 2026</h1>
+
     <div class="hud-panel time-display">
         <div class="huge-time" id="clock-display">00:00:00</div>
         <div class="date-display" id="date-display">...</div>
@@ -20,6 +30,7 @@
     </div>
 
     <div class="theme-selector">
+        <label for="themeSelect" class="sr-only">Visual theme</label>
         <select id="themeSelect">
             <option value="theme-bio">Bioluminescent</option>
             <option value="theme-glass">Glassmorphism</option>
@@ -57,7 +68,7 @@
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Astronomical</div>
     </div>
 
-    <a href="#" class="info-icon" id="infoIcon"><i class="fa-solid fa-info"></i></a>
+    <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><i class="fa-solid fa-info" aria-hidden="true"></i></a>
     <div class="info-popup" id="infoPopup">
         <div class="info-popup-title">Cosmic Oracle</div>
         <a href="https://lukesteuber.com" target="_blank">lukesteuber.com</a>
