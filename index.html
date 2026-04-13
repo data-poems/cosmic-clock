@@ -534,7 +534,7 @@
             { name: 'Spring', start: 79, color: '#22c55e', end: 172 },
             { name: 'Summer', start: 172, color: '#fbbf24', end: 266 },
             { name: 'Autumn', start: 266, color: '#f97316', end: 356 },
-            { name: 'Winter', start: 356, color: '#60a5fa', end: 365 }
+            { name: 'Winter', start: 356, color: '#60a5fa', end: 366 }
         ];
 
         // === RING DEFINITIONS ===
@@ -562,6 +562,12 @@
             return phase;
         }
 
+        // Solar longitude (0-360°) to approximate day-of-year
+        // Solar lon 0° = vernal equinox ≈ day 79
+        function solLonToDoy(solLon) {
+            return ((solLon / 360) * DAYS_IN_YEAR + 79) % DAYS_IN_YEAR;
+        }
+
         let hoveredRingId = null;
         let hoveredSegmentIdx = null;
 
@@ -572,7 +578,7 @@
             if (ring.id === 'day') return (now.getDate() - 1 + hrProgress / 24) / 31;
             if (ring.id === 'month') return (now.getMonth() + (now.getDate() - 1) / 31) / 12;
             if (ring.id === 'week') {
-                const weekOfYear = Math.ceil(dayOfYear / 7);
+                const weekOfYear = Math.min(52, Math.ceil(dayOfYear / 7));
                 return (weekOfYear - 1 + (now.getDay() + hrProgress / 24) / 7) / 52;
             }
             if (['lunar', 'zodiac', 'events', 'seasons', 'daylight', 'showers', 'planets'].includes(ring.type)) return yearProgress;
@@ -733,6 +739,11 @@
             ctx.lineWidth = theme.ringStyle === 'flat' ? 2 : 1;
             ctx.strokeStyle = theme.lineColor;
             ctx.stroke();
+
+            // Pre-compute orbital values once per frame
+            const jdNow = julianDate(now);
+            const currentSolLon = solarLongitude(jdNow);
+            const centuriesFromJ2000 = (jdNow - 2451545.0) / 36525;
 
             rings.forEach(ring => {
                 const r = ring.r * maxR;
@@ -972,13 +983,10 @@
                 }
 
                 if (ring.type === 'showers') {
-                    const jd = julianDate(now);
-                    const currentSolLon = solarLongitude(jd);
                     meteorShowerData.forEach(shower => {
-                        // Map solar longitude to angle on ring (solar lon 0° = spring equinox ≈ day 79)
-                        const startA = (shower.activity[0] / 360) * TAU - HALF_PI;
-                        const endA = (shower.activity[1] / 360) * TAU - HALF_PI;
-                        const peakA = (shower.peakSolLon / 360) * TAU - HALF_PI;
+                        const startA = (solLonToDoy(shower.activity[0]) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const endA = (solLonToDoy(shower.activity[1]) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const peakA = (solLonToDoy(shower.peakSolLon) / DAYS_IN_YEAR) * TAU - HALF_PI;
 
                         const isActive = (currentSolLon >= shower.activity[0] && currentSolLon <= shower.activity[1]) ||
                             (shower.activity[0] > shower.activity[1] && (currentSolLon >= shower.activity[0] || currentSolLon <= shower.activity[1]));
@@ -1002,15 +1010,12 @@
                 }
 
                 if (ring.type === 'planets') {
-                    const jd = julianDate(now);
-                    const T = (jd - 2451545.0) / 36525;
-                    const sunLon = solarLongitude(jd);
                     nakedEyePlanets.forEach(p => {
-                        const lon = norm(p.L + p.LR * T);
-                        const a = (lon / 360) * TAU - HALF_PI;
+                        const lon = norm(p.L + p.LR * centuriesFromJ2000);
+                        const a = (solLonToDoy(lon) / DAYS_IN_YEAR) * TAU - HALF_PI;
 
                         // Elongation from sun determines visibility
-                        let elong = Math.abs(lon - sunLon);
+                        let elong = Math.abs(lon - currentSolLon);
                         if (elong > 180) elong = 360 - elong;
                         const isVisible = elong > 15; // roughly visible when >15° from sun
 
@@ -1035,7 +1040,8 @@
             });
 
             // === CENTER PULSE ===
-            const heartbeat = 1 - (ms / 1000);
+            const breathCycle = 4000;
+            const heartbeat = (Math.sin((Date.now() % breathCycle) / breathCycle * TAU) + 1) / 2;
             const centerColor = theme.centerColor;
             const style = theme.ringStyle;
 
@@ -1198,11 +1204,12 @@
                 const m = Math.round((hours - h) * 60);
                 title = "DAYLIGHT"; body = `~${h}h ${m}m of daylight<br><span style="opacity:0.6">Model: 40°N latitude</span>`;
             } else if (ring.type === 'showers') {
-                const solLonFromA = (dataA / TAU) * 360;
+                const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
                 let closest = null; let minD = 15;
                 meteorShowerData.forEach(s => {
-                    let d = Math.abs(s.peakSolLon - solLonFromA);
-                    if (d > 180) d = 360 - d;
+                    const peakDoy = solLonToDoy(s.peakSolLon);
+                    let d = Math.abs(peakDoy - doyFromA);
+                    if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
                     if (d < minD) { minD = d; closest = s; }
                 });
                 if (closest) {
@@ -1212,14 +1219,15 @@
                     title = "METEOR SHOWERS"; body = "Hover peak markers for shower info";
                 }
             } else if (ring.type === 'planets') {
-                const lonFromA = (dataA / TAU) * 360;
+                const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
                 let closest = null; let minD = 15;
                 const jd = julianDate(new Date());
                 const T = (jd - 2451545.0) / 36525;
                 nakedEyePlanets.forEach(p => {
                     const pLon = norm(p.L + p.LR * T);
-                    let d = Math.abs(pLon - lonFromA);
-                    if (d > 180) d = 360 - d;
+                    const pDoy = solLonToDoy(pLon);
+                    let d = Math.abs(pDoy - doyFromA);
+                    if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
                     if (d < minD) { minD = d; closest = { ...p, lon: pLon }; }
                 });
                 if (closest) {
