@@ -671,7 +671,7 @@
                 },
                 tooltip(idx, dataA) {
                     const dCheck = (dataA / TAU) * DAYS_IN_YEAR;
-                    let closest = null; let minD = 3;
+                    let closest = null; let minD = 8;
                     allEvents.forEach(ev => {
                         const ed = (ev.date - YEAR_BASE) / MS_PER_DAY;
                         let d = Math.abs(ed - dCheck); if (d > 300) d = DAYS_IN_YEAR - d;
@@ -764,7 +764,10 @@
                         if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
                         if (d < minD) { minD = d; closest = s; }
                     });
-                    if (closest) return { title: "METEOR SHOWER", body: `${closest.name}<br>ZHR: ~${closest.zhr} meteors/hr` };
+                    if (closest) return {
+                        title: '<span class="tooltip-type" style="color:#a855f7">\u25CF METEOR SHOWER</span>',
+                        body: `<div class="tooltip-event-name">${closest.name}</div><div class="tooltip-date">ZHR: ~${closest.zhr} meteors/hr at peak</div>`
+                    };
                     return { title: "METEOR SHOWERS", body: "Hover peak markers for shower info" };
                 }
             },
@@ -796,7 +799,15 @@
                         if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
                         if (d < minD) { minD = d; closest = { ...p, lon: pLon }; }
                     });
-                    if (closest) return { title: `${closest.symbol} ${closest.name.toUpperCase()}`, body: `Ecliptic longitude: ${closest.lon.toFixed(1)}°` };
+                    if (closest) {
+                        let elong = Math.abs(closest.lon - solarLongitude(julianDate(new Date())));
+                        if (elong > 180) elong = 360 - elong;
+                        const vis = elong > 15 ? 'Currently visible' : 'Near the Sun (not visible)';
+                        return {
+                            title: `<span class="tooltip-type" style="color:${closest.color}">${closest.symbol} ${closest.name.toUpperCase()}</span>`,
+                            body: `<div class="tooltip-event-name">${closest.name}</div><div class="tooltip-date">Ecliptic longitude: ${closest.lon.toFixed(1)}\u00B0</div><div class="tooltip-countdown">${vis}</div>`
+                        };
+                    }
                     return { title: "PLANETS", body: "Naked-eye planet positions" };
                 }
             }
@@ -1221,11 +1232,26 @@
             let title = ring.id.toUpperCase(); let body = `Index: ${idx + 1}`;
 
             // Standard ring tooltips
-            if (ring.id === 'month' && ring.labels[idx]) { title = "MONTH"; body = ring.labels[idx]; }
-            else if (ring.id === 'wday' && ring.labels[idx]) { title = "WEEKDAY"; body = ring.labels[idx]; }
-            else if (ring.id === 'week') { title = "WEEK"; body = `Week ${idx + 1} of 52`; }
-            else if (ring.id === 'hr') { title = "HOUR"; body = `${idx}:00`; }
-            else if (ring.id === 'min') { title = "MINUTE"; body = `${idx}`; }
+            if (ring.id === 'month' && ring.labels[idx]) {
+                title = '<span class="tooltip-type" style="color:#10b981">\u25CF MONTH</span>';
+                body = `<div class="tooltip-event-name">${ring.labels[idx]}</div>`;
+            }
+            else if (ring.id === 'wday' && ring.labels[idx]) {
+                title = '<span class="tooltip-type" style="color:#10b981">\u25CF WEEKDAY</span>';
+                body = `<div class="tooltip-event-name">${ring.labels[idx]}</div>`;
+            }
+            else if (ring.id === 'week') {
+                title = '<span class="tooltip-type" style="color:#10b981">\u25CF WEEK</span>';
+                body = `<div class="tooltip-event-name">Week ${idx + 1}</div><div class="tooltip-date">of 52 weeks</div>`;
+            }
+            else if (ring.id === 'hr') {
+                title = '<span class="tooltip-type" style="color:#ef4444">\u25CF HOUR</span>';
+                body = `<div class="tooltip-event-name">${idx}:00</div>`;
+            }
+            else if (ring.id === 'min') {
+                title = '<span class="tooltip-type" style="color:#ef4444">\u25CF MINUTE</span>';
+                body = `<div class="tooltip-event-name">:${idx.toString().padStart(2, '0')}</div>`;
+            }
             // Dispatch to registered renderer tooltip
             else if (ring.type && ringRenderers[ring.type]) {
                 const tip = ringRenderers[ring.type].tooltip(idx, dataA);
