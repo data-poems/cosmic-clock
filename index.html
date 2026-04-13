@@ -67,6 +67,8 @@
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Astronomical</div>
         <div class="key-item"><div class="key-dot" style="background: #22c55e"></div>Seasons</div>
         <div class="key-item"><div class="key-dot" style="background: #fbbf24"></div>Daylight</div>
+        <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Showers</div>
+        <div class="key-item"><div class="key-dot" style="background: #cc9966"></div>Planets</div>
     </div>
 
     <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><svg width="14" height="14" viewBox="0 0 192 512" fill="currentColor" aria-hidden="true"><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v224h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h32V256H32c-17.7 0-32-14.3-32-32z"/></svg></a>
@@ -103,6 +105,51 @@
         const KNOWN_NEW_MOON = new Date(Date.UTC(2026, 0, 29, 12, 36)).getTime();
         // Day 0 of month 0 = Dec 31, 2025. Subtracting from a 2026 date gives 1-based day-of-year.
         const YEAR_BASE = new Date(2026, 0, 0);
+
+        // === ORBITAL MECHANICS (ported from orrery/kepler.ts) ===
+        const DEG = Math.PI / 180;
+        function norm(a) { return ((a % 360) + 360) % 360; }
+
+        function julianDate(date) {
+            const y = date.getUTCFullYear(), m = date.getUTCMonth() + 1;
+            const d = date.getUTCDate() + date.getUTCHours()/24 + date.getUTCMinutes()/1440 + date.getUTCSeconds()/86400;
+            const a = Math.floor((14 - m) / 12);
+            const yy = y + 4800 - a, mm = m + 12 * a - 3;
+            return d + Math.floor((153*mm + 2)/5) + 365*yy + Math.floor(yy/4) - Math.floor(yy/100) + Math.floor(yy/400) - 32045;
+        }
+
+        function solarLongitude(jd) {
+            const T = (jd - 2451545.0) / 36525;
+            const L0 = norm(280.46646 + 36000.76983*T + 0.0003032*T*T);
+            const M = norm(357.52911 + 35999.05029*T - 0.0001537*T*T);
+            const Mrad = M * DEG;
+            const C = (1.914602 - 0.004817*T)*Math.sin(Mrad) + 0.019993*Math.sin(2*Mrad) + 0.000289*Math.sin(3*Mrad);
+            return norm(L0 + C);
+        }
+
+        // Naked-eye planets: JPL J2000 mean longitude + rate (from orrery/planets.ts)
+        const nakedEyePlanets = [
+            { name: 'Mercury', color: '#b0a090', L: 252.250, LR: 149472.674, symbol: '\u263F' },
+            { name: 'Venus',   color: '#e8c870', L: 181.979, LR: 58517.815,  symbol: '\u2640' },
+            { name: 'Mars',    color: '#cc6644', L: -4.553,  LR: 19140.303,  symbol: '\u2642' },
+            { name: 'Jupiter', color: '#cc9966', L: 34.396,  LR: 3034.746,   symbol: '\u2643' },
+            { name: 'Saturn',  color: '#ddbb77', L: 49.954,  LR: 1222.494,   symbol: '\u2644' }
+        ];
+
+        // Major meteor showers: solar longitude peaks from IAU Meteor Data Center
+        const meteorShowerData = [
+            { name: 'Quadrantids',   peakSolLon: 283.16, activity: [275, 290], zhr: 110 },
+            { name: 'Lyrids',        peakSolLon: 32.32,  activity: [28, 38],   zhr: 18 },
+            { name: 'Eta Aquariids', peakSolLon: 45.5,   activity: [35, 55],   zhr: 50 },
+            { name: 'Delta Aquariids', peakSolLon: 125.0, activity: [118, 138], zhr: 25 },
+            { name: 'Perseids',      peakSolLon: 140.0,  activity: [125, 155], zhr: 100 },
+            { name: 'Draconids',     peakSolLon: 195.4,  activity: [193, 198], zhr: 10 },
+            { name: 'Orionids',      peakSolLon: 208.0,  activity: [195, 220], zhr: 20 },
+            { name: 'Taurids',       peakSolLon: 220.0,  activity: [200, 240], zhr: 10 },
+            { name: 'Leonids',       peakSolLon: 235.27, activity: [230, 240], zhr: 15 },
+            { name: 'Geminids',      peakSolLon: 262.2,  activity: [250, 270], zhr: 150 },
+            { name: 'Ursids',        peakSolLon: 270.7,  activity: [264, 275], zhr: 10 }
+        ];
 
         let width, height, cx, cy;
         let dpr = window.devicePixelRatio || 1;
@@ -502,7 +549,9 @@
             { id: 'seasons', divisions: 4, r: 0.59, w: 15, color: '#22c55e', type: 'seasons' },
             { id: 'zodiac', divisions: 12, r: 0.67, w: 40, color: '#f59e0b', type: 'zodiac' },
             { id: 'events', divisions: DAYS_IN_YEAR, r: 0.78, w: 10, color: '#3b82f6', type: 'events' },
-            { id: 'daylight', divisions: DAYS_IN_YEAR, r: 0.87, w: 20, color: '#fbbf24', type: 'daylight' }
+            { id: 'showers', divisions: DAYS_IN_YEAR, r: 0.83, w: 8, color: '#a855f7', type: 'showers' },
+            { id: 'daylight', divisions: DAYS_IN_YEAR, r: 0.87, w: 20, color: '#fbbf24', type: 'daylight' },
+            { id: 'planets', divisions: DAYS_IN_YEAR, r: 0.93, w: 18, color: '#cc9966', type: 'planets' }
         ];
 
         // === RENDERING HELPERS ===
@@ -526,7 +575,7 @@
                 const weekOfYear = Math.ceil(dayOfYear / 7);
                 return (weekOfYear - 1 + (now.getDay() + hrProgress / 24) / 7) / 52;
             }
-            if (['lunar', 'zodiac', 'events', 'seasons', 'daylight'].includes(ring.type)) return yearProgress;
+            if (['lunar', 'zodiac', 'events', 'seasons', 'daylight', 'showers', 'planets'].includes(ring.type)) return yearProgress;
             return 0;
         }
 
@@ -560,6 +609,8 @@
             if (ring.type === 'events') return theme.ringColors.events;
             if (ring.type === 'seasons') return theme.ringColors.seasons;
             if (ring.type === 'daylight') return theme.ringColors.daylight;
+            if (ring.type === 'showers') return theme.ringColors.celestial;
+            if (ring.type === 'planets') return theme.ringColors.celestial;
             return ring.color;
         }
 
@@ -678,7 +729,7 @@
             // Reading Line
             ctx.beginPath();
             ctx.moveTo(cx, cy - maxR * 0.05);
-            ctx.lineTo(cx, cy - maxR * 0.92);
+            ctx.lineTo(cx, cy - maxR * 0.96);
             ctx.lineWidth = theme.ringStyle === 'flat' ? 2 : 1;
             ctx.strokeStyle = theme.lineColor;
             ctx.stroke();
@@ -920,6 +971,66 @@
                     ctx.globalAlpha = 1.0;
                 }
 
+                if (ring.type === 'showers') {
+                    const jd = julianDate(now);
+                    const currentSolLon = solarLongitude(jd);
+                    meteorShowerData.forEach(shower => {
+                        // Map solar longitude to angle on ring (solar lon 0° = spring equinox ≈ day 79)
+                        const startA = (shower.activity[0] / 360) * TAU - HALF_PI;
+                        const endA = (shower.activity[1] / 360) * TAU - HALF_PI;
+                        const peakA = (shower.peakSolLon / 360) * TAU - HALF_PI;
+
+                        const isActive = (currentSolLon >= shower.activity[0] && currentSolLon <= shower.activity[1]) ||
+                            (shower.activity[0] > shower.activity[1] && (currentSolLon >= shower.activity[0] || currentSolLon <= shower.activity[1]));
+
+                        // Activity arc
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r, startA, endA);
+                        ctx.strokeStyle = '#a855f7';
+                        ctx.globalAlpha = isActive ? 0.7 : 0.15;
+                        ctx.lineWidth = w;
+                        ctx.stroke();
+
+                        // Peak dot
+                        ctx.beginPath();
+                        ctx.arc(Math.cos(peakA) * r, Math.sin(peakA) * r, isActive ? 4 : 2, 0, TAU);
+                        ctx.fillStyle = isActive ? '#c084fc' : '#a855f7';
+                        ctx.globalAlpha = isActive ? 1 : 0.4;
+                        ctx.fill();
+                    });
+                    ctx.globalAlpha = 1.0;
+                }
+
+                if (ring.type === 'planets') {
+                    const jd = julianDate(now);
+                    const T = (jd - 2451545.0) / 36525;
+                    const sunLon = solarLongitude(jd);
+                    nakedEyePlanets.forEach(p => {
+                        const lon = norm(p.L + p.LR * T);
+                        const a = (lon / 360) * TAU - HALF_PI;
+
+                        // Elongation from sun determines visibility
+                        let elong = Math.abs(lon - sunLon);
+                        if (elong > 180) elong = 360 - elong;
+                        const isVisible = elong > 15; // roughly visible when >15° from sun
+
+                        ctx.beginPath();
+                        ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 5, 0, TAU);
+                        ctx.fillStyle = p.color;
+                        ctx.globalAlpha = isVisible ? 0.9 : 0.3;
+                        ctx.fill();
+
+                        // Planet symbol
+                        ctx.font = '11px sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = isVisible ? theme.textColor : theme.textDim;
+                        ctx.globalAlpha = isVisible ? 0.9 : 0.3;
+                        ctx.fillText(p.symbol, Math.cos(a) * r, Math.sin(a) * r - 10);
+                    });
+                    ctx.globalAlpha = 1.0;
+                }
+
                 ctx.restore();
             });
 
@@ -1086,6 +1197,37 @@
                 const h = Math.floor(hours);
                 const m = Math.round((hours - h) * 60);
                 title = "DAYLIGHT"; body = `~${h}h ${m}m of daylight<br><span style="opacity:0.6">Model: 40°N latitude</span>`;
+            } else if (ring.type === 'showers') {
+                const solLonFromA = (dataA / TAU) * 360;
+                let closest = null; let minD = 15;
+                meteorShowerData.forEach(s => {
+                    let d = Math.abs(s.peakSolLon - solLonFromA);
+                    if (d > 180) d = 360 - d;
+                    if (d < minD) { minD = d; closest = s; }
+                });
+                if (closest) {
+                    title = "METEOR SHOWER";
+                    body = `${closest.name}<br>ZHR: ~${closest.zhr} meteors/hr`;
+                } else {
+                    title = "METEOR SHOWERS"; body = "Hover peak markers for shower info";
+                }
+            } else if (ring.type === 'planets') {
+                const lonFromA = (dataA / TAU) * 360;
+                let closest = null; let minD = 15;
+                const jd = julianDate(new Date());
+                const T = (jd - 2451545.0) / 36525;
+                nakedEyePlanets.forEach(p => {
+                    const pLon = norm(p.L + p.LR * T);
+                    let d = Math.abs(pLon - lonFromA);
+                    if (d > 180) d = 360 - d;
+                    if (d < minD) { minD = d; closest = { ...p, lon: pLon }; }
+                });
+                if (closest) {
+                    title = `${closest.symbol} ${closest.name.toUpperCase()}`;
+                    body = `Ecliptic longitude: ${closest.lon.toFixed(1)}°`;
+                } else {
+                    title = "PLANETS"; body = "Naked-eye planet positions";
+                }
             } else if (ring.id === 'hr') { title = "HOUR"; body = `${idx}:00`; }
             else if (ring.id === 'min') { title = "MINUTE"; body = `${idx}`; }
             tooltip.innerHTML = `<h3>${title}</h3><div class="content">${body}</div>`;
