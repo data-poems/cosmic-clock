@@ -69,8 +69,6 @@
         <div class="key-item"><div class="key-dot" style="background: #fbbf24"></div>Daylight</div>
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Showers</div>
         <div class="key-item"><div class="key-dot" style="background: #cc9966"></div>Planets</div>
-        <div class="key-item"><div class="key-dot" style="background: #f472b6"></div>News</div>
-        <div class="key-item"><div class="key-dot" style="background: #06b6d4"></div>Space</div>
     </div>
 
     <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><svg width="14" height="14" viewBox="0 0 192 512" fill="currentColor" aria-hidden="true"><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v224h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h32V256H32c-17.7 0-32-14.3-32-32z"/></svg></a>
@@ -156,8 +154,6 @@
         let width, height, cx, cy;
         let dpr = window.devicePixelRatio || 1;
         let interactionPos = null;
-        let parallaxX = 0, parallaxY = 0;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let currentTheme = 'theme-bio';
         let isMobile = false;
         let lastDisplaySecond = -1;
@@ -404,8 +400,6 @@
             sports: '#6366f1',      // Indigo
             holiday: '#ec4899',     // Pink
             political: '#64748b',   // Slate
-            news: '#f472b6',        // Rose
-            space: '#06b6d4',       // Cyan
         };
 
         // Expanded events database
@@ -459,23 +453,6 @@
                 { date: new Date(2026, 10, 26), name: "Thanksgiving (US)", type: 'holiday' },
                 { date: new Date(2026, 11, 25), name: "Christmas Day", type: 'holiday' },
                 { date: new Date(2026, 11, 31), name: "New Year's Eve", type: 'holiday' },
-            ],
-            news: [
-                { date: new Date(2026, 0, 15), name: "Bulgaria Adopts Euro", type: 'news', desc: "Bulgaria joins the eurozone" },
-                { date: new Date(2026, 0, 22), name: "US Withdraws from WHO", type: 'news', desc: "Formal withdrawal from World Health Organization" },
-                { date: new Date(2026, 0, 25), name: "US Winter Storm", type: 'news', desc: "Major winter storm system across central US" },
-                { date: new Date(2026, 1, 5), name: "New START Treaty Expires", type: 'news', desc: "US-Russia nuclear arms treaty expires" },
-                { date: new Date(2026, 1, 20), name: "Brazil Floods", type: 'news', desc: "Devastating floods in Minas Gerais" },
-                { date: new Date(2026, 1, 28), name: "Iran Conflict Begins", type: 'news', desc: "Military operations commence" },
-                { date: new Date(2026, 3, 2), name: "Cyclone Maila", type: 'news', desc: "Severe cyclone in the Pacific" },
-                { date: new Date(2026, 4, 14), name: "Eurovision 2026", type: 'news', desc: "Eurovision Song Contest" },
-                { date: new Date(2026, 10, 3), name: "US Midterm Elections", type: 'political', desc: "Congressional midterm elections" },
-            ],
-            space: [
-                { date: new Date(2026, 3, 1), name: "Artemis II Launch", type: 'space', desc: "First crewed Artemis mission orbiting the Moon" },
-                { date: new Date(2026, 5, 1), name: "BepiColombo at Mercury", type: 'space', desc: "ESA/JAXA probe enters Mercury orbit" },
-                { date: new Date(2026, 8, 1), name: "Roman Telescope Launch", type: 'space', desc: "Nancy Grace Roman Space Telescope" },
-                { date: new Date(2026, 9, 1), name: "Chang'e 7 Launch", type: 'space', desc: "China's lunar south pole mission" },
             ]
         };
 
@@ -483,9 +460,7 @@
         const allEvents = [
             ...eventsData.astronomical,
             ...eventsData.sports,
-            ...eventsData.cultural,
-            ...eventsData.news,
-            ...eventsData.space
+            ...eventsData.cultural
         ].sort((a,b) => a.date - b.date);
 
         // Accurate zodiac constellation data
@@ -655,32 +630,15 @@
             },
             events: {
                 render(r, w, theme, extra) {
-                    const hoveredDoy = extra.hoveredDataA != null ? (extra.hoveredDataA / TAU) * DAYS_IN_YEAR : -1;
                     allEvents.forEach(ev => {
                         const doy = (ev.date - YEAR_BASE) / MS_PER_DAY;
                         const a = (doy / DAYS_IN_YEAR) * TAU - HALF_PI;
                         const isToday = ev.date.toDateString() === extra.now.toDateString();
                         const eventColor = eventColors[ev.type] || extra.ringColor;
-                        const dotX = Math.cos(a) * r, dotY = Math.sin(a) * r;
-                        const isHoveredEvent = Math.abs(doy - hoveredDoy) < 3 || (Math.abs(doy - hoveredDoy) > 300 && DAYS_IN_YEAR - Math.abs(doy - hoveredDoy) < 3);
-
-                        if (isHoveredEvent) {
-                            // Shadow beneath (lift illusion)
-                            ctx.globalAlpha = 0.2;
-                            ctx.beginPath(); ctx.arc(dotX, dotY + 3, 6, 0, TAU);
-                            ctx.fillStyle = '#000'; ctx.fill();
-                            // Lifted dot
-                            ctx.globalAlpha = 1;
-                            ctx.beginPath(); ctx.arc(dotX, dotY - 2, 7, 0, TAU);
-                            ctx.fillStyle = theme.textColor;
-                            if (theme.glowEnabled) { ctx.shadowBlur = 15; ctx.shadowColor = eventColor; }
-                            ctx.fill(); resetShadow();
-                        } else {
-                            ctx.beginPath(); ctx.arc(dotX, dotY, isToday ? 6 : 4, 0, TAU);
-                            ctx.fillStyle = isToday ? theme.textColor : eventColor;
-                            if (isToday && theme.glowEnabled) { ctx.shadowBlur = 12; ctx.shadowColor = eventColor; }
-                            ctx.fill(); resetShadow();
-                        }
+                        ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, isToday ? 6 : 4, 0, TAU);
+                        ctx.fillStyle = isToday ? theme.textColor : eventColor;
+                        if (isToday && theme.glowEnabled) { ctx.shadowBlur = 12; ctx.shadowColor = eventColor; }
+                        ctx.fill(); resetShadow();
                     });
                 },
                 tooltip(idx, dataA) {
@@ -693,14 +651,7 @@
                     });
                     if (closest) {
                         const typeColor = eventColors[closest.type] || '#3b82f6';
-                        const now = new Date();
-                        const diffDays = Math.round((closest.date - now) / MS_PER_DAY);
-                        const countdown = diffDays > 0 ? `In ${diffDays} days` : diffDays === 0 ? 'Today' : `${Math.abs(diffDays)} days ago`;
-                        const desc = closest.desc ? `<div class="tooltip-desc">${closest.desc}</div>` : '';
-                        return {
-                            title: `<span class="tooltip-type" style="color:${typeColor}">\u25CF ${closest.type.toUpperCase()}</span>`,
-                            body: `<div class="tooltip-event-name">${closest.name}</div><div class="tooltip-date">${closest.date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}</div>${desc}<div class="tooltip-countdown">${countdown}</div>`
-                        };
+                        return { title: closest.name, body: `Date: ${closest.date.toLocaleDateString()}<br>Type: <span style="color:${typeColor}">${closest.type.toUpperCase()}</span>` };
                     }
                     return { title: "EVENTS", body: "Hover markers for 2026 milestones" };
                 }
@@ -832,7 +783,6 @@
 
         let hoveredRingId = null;
         let hoveredSegmentIdx = null;
-        let hoveredDataA = null;
 
         function getRingValue(ring, now, minProgress, hrProgress, yearProgress, dayOfYear) {
             if (ring.id === 'min') return minProgress / 60;
@@ -884,14 +834,12 @@
         }
 
         // Draw ring with theme-specific style
-        function drawThemedRing(r, w, color, progress, theme, isHovered, wobble) {
+        function drawThemedRing(r, w, color, progress, theme, isHovered) {
             const style = theme.ringStyle;
-            const ry = wobble ? r * wobble.squeeze : r;
-            const tilt = wobble ? wobble.tilt : 0;
 
             // Background ring (track)
             ctx.beginPath();
-            ctx.ellipse(0, 0, r, ry, tilt, 0, TAU);
+            ctx.arc(0, 0, r, 0, TAU);
             ctx.strokeStyle = color;
             ctx.globalAlpha = isHovered ? theme.ringOpacity * 2.5 : theme.ringOpacity;
             ctx.lineWidth = w;
@@ -915,7 +863,7 @@
                 ctx.shadowBlur = 6;
                 ctx.shadowColor = color;
                 ctx.beginPath();
-                ctx.ellipse(0, 0, r, ry, tilt, 0, TAU);
+                ctx.arc(0, 0, r, 0, TAU);
                 ctx.strokeStyle = color;
                 ctx.globalAlpha = 0.15;
                 ctx.lineWidth = w + 4;
@@ -928,13 +876,13 @@
                 ctx.globalAlpha = 1;
                 // Inner bevel (light)
                 ctx.beginPath();
-                ctx.ellipse(0, 0, r - w/2 + 1, (r - w/2 + 1) * (ry/r), tilt, 0, TAU);
+                ctx.arc(0, 0, r - w/2 + 1, 0, TAU);
                 ctx.strokeStyle = theme.bezelLight;
                 ctx.lineWidth = 1;
                 ctx.stroke();
                 // Outer bevel (dark)
                 ctx.beginPath();
-                ctx.ellipse(0, 0, r + w/2 - 1, (r + w/2 - 1) * (ry/r), tilt, 0, TAU);
+                ctx.arc(0, 0, r + w/2 - 1, 0, TAU);
                 ctx.strokeStyle = theme.bezelDark;
                 ctx.lineWidth = 1;
                 ctx.stroke();
@@ -948,7 +896,7 @@
                 ctx.beginPath();
                 const startA = -HALF_PI;
                 const endA = startA + (progress * TAU);
-                ctx.ellipse(0, 0, r, ry, tilt, startA, endA);
+                ctx.arc(0, 0, r, startA, endA);
                 ctx.strokeStyle = color;
                 ctx.globalAlpha = theme.activeOpacity;
                 ctx.lineWidth = w;
@@ -1010,25 +958,7 @@
             const currentSolLon = solarLongitude(jdNow);
             const centuriesFromJ2000 = (jdNow - 2451545.0) / 36525;
 
-            // 3D perspective drift + mouse parallax
-            if (!reducedMotion) {
-                const t = Date.now();
-                const driftX = 8 + 2 * Math.sin(t / 20000 * TAU);
-                const driftY = 1.5 * Math.cos(t / 26000 * TAU);
-                canvas.style.transform = `perspective(1200px) rotateX(${driftX + parallaxX}deg) rotateY(${driftY + parallaxY}deg)`;
-            }
-
-            // Per-ring wobble parameters
-            const wobbles = rings.map((ring, i) => {
-                if (reducedMotion) return { squeeze: 1, tilt: 0 };
-                const intensity = 0.005 + (ring.r * 0.02);
-                const period = 15000 + i * 3000;
-                const squeeze = 1 - intensity * Math.sin(Date.now() / period * TAU);
-                const tilt = intensity * 0.3 * Math.cos(Date.now() / (period * 1.2) * TAU);
-                return { squeeze, tilt };
-            });
-
-            rings.forEach((ring, ringIdx) => {
+            rings.forEach(ring => {
                 const r = ring.r * maxR;
                 const w = ring.w;
                 const isHoveredRing = hoveredRingId === ring.id;
@@ -1042,48 +972,24 @@
                 ctx.translate(cx, cy);
                 ctx.rotate(rotation);
 
-                // Dim non-hovered rings when something is hovered
-                if (hoveredRingId && !isHoveredRing) ctx.globalAlpha = 0.6;
-
-                // Wobble: hovered ring lifts (squeeze → 1.0)
-                const wobble = isHoveredRing ? { squeeze: 1, tilt: 0 } : wobbles[ringIdx];
-
                 // Draw themed ring (background track + progress for standard, track-only for special)
                 if (!ring.type) {
-                    drawThemedRing(r, w, ringColor, val, theme, isHoveredRing, wobble);
+                    drawThemedRing(r, w, ringColor, val, theme, isHoveredRing);
                 } else {
-                    drawThemedRing(r, w, ringColor, 0, theme, isHoveredRing, wobble);
+                    drawThemedRing(r, w, ringColor, 0, theme, isHoveredRing);
                 }
 
-                // Hover highlight for hovered segment — pulsing glow + radial connector
+                // Hover highlight for hovered segment
                 if (isHoveredRing && hoveredSegmentIdx !== null) {
                     const a1 = (hoveredSegmentIdx / ring.divisions) * TAU - HALF_PI;
                     const a2 = ((hoveredSegmentIdx + 1) / ring.divisions) * TAU - HALF_PI;
-                    const hoverPulse = (Math.sin(Date.now() / 300 * TAU) + 1) / 2;
-                    ctx.beginPath(); ctx.ellipse(0, 0, r, r, 0, a1, a2);
+                    ctx.beginPath(); ctx.arc(0, 0, r, a1, a2);
                     ctx.strokeStyle = theme.textColor; ctx.lineWidth = w + 6;
                     if (theme.glowEnabled) {
-                        ctx.shadowBlur = 10 + hoverPulse * 10; ctx.shadowColor = theme.textColor;
+                        ctx.shadowBlur = 15; ctx.shadowColor = theme.textColor;
                     }
                     ctx.stroke();
                     resetShadow();
-
-                    // Radial connector for discrete-marker rings
-                    if (['events', 'showers', 'planets'].includes(ring.type)) {
-                        const midA = (a1 + a2) / 2;
-                        const outerX = Math.cos(midA) * r;
-                        const outerY = Math.sin(midA) * r;
-                        const innerX = Math.cos(midA) * r * 0.3;
-                        const innerY = Math.sin(midA) * r * 0.3;
-                        ctx.beginPath();
-                        ctx.moveTo(outerX, outerY);
-                        ctx.quadraticCurveTo(outerX * 0.5, outerY * 0.5 - 10, innerX, innerY);
-                        ctx.strokeStyle = theme.textColor;
-                        ctx.globalAlpha = 0.25 + hoverPulse * 0.15;
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                        ctx.globalAlpha = 1;
-                    }
                 }
 
                 if (ring.labels) {
@@ -1106,8 +1012,7 @@
                 // Dispatch to registered renderer for special ring types
                 if (ring.type && ringRenderers[ring.type]) {
                     ringRenderers[ring.type].render(r, w, theme, {
-                        now, dayOfYear, ringColor, currentSolLon, centuriesFromJ2000,
-                        hoveredDataA: isHoveredRing ? hoveredDataA : null
+                        now, dayOfYear, ringColor, currentSolLon, centuriesFromJ2000
                     });
                 }
 
@@ -1226,7 +1131,6 @@
                         let dataA = normScreenAngle - rot;
                         while (dataA < 0) dataA += TAU; while (dataA > TAU) dataA -= TAU;
                         hoveredSegmentIdx = Math.floor((dataA / (TAU)) * ring.divisions);
-                        hoveredDataA = dataA;
                         showTooltipContent(ring, hoveredSegmentIdx, interactionPos.x, interactionPos.y, dataA);
                     }
                 });
@@ -1237,7 +1141,7 @@
 
         // === INTERACTION / TOOLTIP ===
         function showTooltipContent(ring, idx, x, y, dataA) {
-            tooltip.classList.add('visible');
+            tooltip.style.display = 'block';
             if (!isMobile) { tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px'; }
             let title = ring.id.toUpperCase(); let body = `Index: ${idx + 1}`;
 
@@ -1256,17 +1160,12 @@
             tooltip.innerHTML = `<h3>${title}</h3><div class="content">${body}</div>`;
         }
 
-        function hideTooltip() { tooltip.classList.remove('visible'); hoveredRingId = null; hoveredSegmentIdx = null; hoveredDataA = null; }
+        function hideTooltip() { tooltip.style.display = 'none'; hoveredRingId = null; hoveredSegmentIdx = null; }
         function setPos(e) {
             const rect = canvas.getBoundingClientRect();
             const cx_ = e.touches ? e.touches[0].clientX : e.clientX;
             const cy_ = e.touches ? e.touches[0].clientY : e.clientY;
             interactionPos = { x: cx_ - rect.left, y: cy_ - rect.top };
-            // Mouse parallax for 3D perspective
-            if (!reducedMotion) {
-                parallaxX = ((cy_ / height) - 0.5) * 6;
-                parallaxY = ((cx_ / width) - 0.5) * -4;
-            }
         }
         // === EVENT LISTENERS ===
         canvas.addEventListener('mousemove', setPos);
