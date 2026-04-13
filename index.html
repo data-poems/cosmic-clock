@@ -508,7 +508,10 @@
         }
 
         function resetShadow() {
-            resetShadow();
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
         }
 
         function getRingColor(ring, theme) {
@@ -542,8 +545,6 @@
                 ctx.shadowColor = theme.neuLightShadow;
                 ctx.stroke();
                 resetShadow();
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
             } else if (style === 'cockpit') {
                 // Retro CRT/cockpit gauge style with scanline effect
                 ctx.stroke();
@@ -914,8 +915,6 @@
                 ctx.shadowOffsetY = 2;
                 ctx.fill();
                 resetShadow();
-                ctx.shadowOffsetX = 0;
-                ctx.shadowOffsetY = 0;
                 // Main core with gradient
                 const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseSize);
                 gradient.addColorStop(0, centerColor);
