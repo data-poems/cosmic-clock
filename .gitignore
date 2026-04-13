@@ -3,7 +3,8 @@
 .playwright-mcp/
 CLAUDE.md
 
-# Agent-generated artifacts
+# Agent-generated plans and artifacts
+docs/
 NEXT_STEPS.md
 STYLE_LINKS.md
 CRITIC.md

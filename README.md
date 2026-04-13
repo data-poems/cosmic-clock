@@ -9,13 +9,18 @@ A hypnotic visualization of time at every scale. Watch the year unfold through c
 
 ## What It Does
 
-Each ring represents a different scale of time, all synchronized to the current moment:
+13 concentric rings, each representing a different scale of time, all synchronized to the current moment:
 
-- **Innermost rings**: Milliseconds, seconds, minutes, hours
-- **Middle rings**: Days of the week, weeks of the year, months
-- **Outer rings**: Lunar phases (8-phase cycle), zodiac constellations, 2026 events
+- **Time rings**: Minutes, hours (progress arcs)
+- **Calendar rings**: Weekday, day of month, month, ISO week number
+- **Celestial rings**: Lunar phases (8-phase cycle), zodiac constellations with line art
+- **Seasonal ring**: Four color-coded seasonal bands with active label
+- **Events ring**: 40+ events for 2026 (holidays, sports, astronomical)
+- **Meteor shower ring**: 11 major showers with activity arcs and peak markers (solar longitude timing from IAU)
+- **Daylight ring**: Variable-width waveform showing hours of daylight (~40°N sinusoidal model)
+- **Planets ring**: 5 naked-eye planets at real-time ecliptic longitude positions (JPL J2000 Keplerian elements)
 
-The whole thing animates smoothly in real-time. Hover or tap any segment to see what it represents.
+The whole thing animates smoothly in real-time. Hover or tap any ring segment for contextual details.
 
 ## Themes
 
