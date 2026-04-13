@@ -65,6 +65,8 @@
         <div class="key-item"><div class="key-dot" style="background: #ec4899"></div>Holidays</div>
         <div class="key-item"><div class="key-dot" style="background: #6366f1"></div>Sports</div>
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Astronomical</div>
+        <div class="key-item"><div class="key-dot" style="background: #22c55e"></div>Seasons</div>
+        <div class="key-item"><div class="key-dot" style="background: #fbbf24"></div>Daylight</div>
     </div>
 
     <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><svg width="14" height="14" viewBox="0 0 192 512" fill="currentColor" aria-hidden="true"><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v224h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h32V256H32c-17.7 0-32-14.3-32-32z"/></svg></a>
@@ -111,7 +113,7 @@
 
         // === THEME CONFIGURATIONS ===
         const defaultThemeConfig = {
-            ringColors: { time: '#ef4444', calendar: '#10b981', celestial: '#f59e0b', events: '#3b82f6' },
+            ringColors: { time: '#ef4444', calendar: '#10b981', celestial: '#f59e0b', events: '#3b82f6', seasons: '#22c55e', daylight: '#fbbf24' },
             bgColor: '#050505', textColor: '#ffffff',
             textDim: 'rgba(255,255,255,0.5)', lineColor: 'rgba(255,255,255,0.3)',
             centerColor: '#ef4444',
@@ -479,6 +481,15 @@
             }
         ].sort((a,b) => a.start - b.start);
 
+        // === SEASON DATA ===
+        const seasonData = [
+            { name: 'Winter', start: 0, color: '#60a5fa', end: 79 },
+            { name: 'Spring', start: 79, color: '#22c55e', end: 172 },
+            { name: 'Summer', start: 172, color: '#fbbf24', end: 266 },
+            { name: 'Autumn', start: 266, color: '#f97316', end: 356 },
+            { name: 'Winter', start: 356, color: '#60a5fa', end: 365 }
+        ];
+
         // === RING DEFINITIONS ===
         const rings = [
             { id: 'min', divisions: 60, r: 0.18, w: 12, color: '#ef4444', static: true },
@@ -486,9 +497,12 @@
             { id: 'wday', divisions: 7, r: 0.32, w: 20, color: '#10b981', labels: ['SUN','MON','TUE','WED','THU','FRI','SAT'] },
             { id: 'day',  divisions: 31, r: 0.38, w: 15, color: '#10b981' },
             { id: 'month', divisions: 12, r: 0.44, w: 25, color: '#10b981', labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'] },
-            { id: 'lunar', divisions: 29, r: 0.52, w: 20, color: '#f59e0b', type: 'lunar' },
-            { id: 'zodiac', divisions: 12, r: 0.65, w: 60, color: '#f59e0b', type: 'zodiac' },
-            { id: 'events', divisions: DAYS_IN_YEAR, r: 0.78, w: 10, color: '#3b82f6', type: 'events' }
+            { id: 'week', divisions: 52, r: 0.49, w: 12, color: '#10b981' },
+            { id: 'lunar', divisions: 29, r: 0.54, w: 20, color: '#f59e0b', type: 'lunar' },
+            { id: 'seasons', divisions: 4, r: 0.59, w: 15, color: '#22c55e', type: 'seasons' },
+            { id: 'zodiac', divisions: 12, r: 0.67, w: 40, color: '#f59e0b', type: 'zodiac' },
+            { id: 'events', divisions: DAYS_IN_YEAR, r: 0.78, w: 10, color: '#3b82f6', type: 'events' },
+            { id: 'daylight', divisions: DAYS_IN_YEAR, r: 0.87, w: 20, color: '#fbbf24', type: 'daylight' }
         ];
 
         // === RENDERING HELPERS ===
@@ -508,7 +522,11 @@
             if (ring.id === 'wday') return (now.getDay() + hrProgress / 24) / 7;
             if (ring.id === 'day') return (now.getDate() - 1 + hrProgress / 24) / 31;
             if (ring.id === 'month') return (now.getMonth() + (now.getDate() - 1) / 31) / 12;
-            if (['lunar', 'zodiac', 'events'].includes(ring.type)) return yearProgress;
+            if (ring.id === 'week') {
+                const weekOfYear = Math.ceil(dayOfYear / 7);
+                return (weekOfYear - 1 + (now.getDay() + hrProgress / 24) / 7) / 52;
+            }
+            if (['lunar', 'zodiac', 'events', 'seasons', 'daylight'].includes(ring.type)) return yearProgress;
             return 0;
         }
 
@@ -540,6 +558,8 @@
             if (['wday', 'day', 'month'].includes(ring.id)) return theme.ringColors.calendar;
             if (ring.type === 'lunar' || ring.type === 'zodiac') return theme.ringColors.celestial;
             if (ring.type === 'events') return theme.ringColors.events;
+            if (ring.type === 'seasons') return theme.ringColors.seasons;
+            if (ring.type === 'daylight') return theme.ringColors.daylight;
             return ring.color;
         }
 
@@ -658,7 +678,7 @@
             // Reading Line
             ctx.beginPath();
             ctx.moveTo(cx, cy - maxR * 0.05);
-            ctx.lineTo(cx, cy - maxR * 0.85);
+            ctx.lineTo(cx, cy - maxR * 0.92);
             ctx.lineWidth = theme.ringStyle === 'flat' ? 2 : 1;
             ctx.strokeStyle = theme.lineColor;
             ctx.stroke();
@@ -678,7 +698,7 @@
                 ctx.rotate(rotation);
 
                 // Draw themed ring (background track + progress)
-                if (['min','hr','wday','day','month'].includes(ring.id)) {
+                if (['min','hr','wday','day','month','week'].includes(ring.id)) {
                     drawThemedRing(r, w, ringColor, val, theme, isHoveredRing);
                 } else {
                     // For special rings (lunar, zodiac, events), just draw background
@@ -846,6 +866,60 @@
                         resetShadow();
                     });
                 }
+
+                if (ring.type === 'seasons') {
+                    seasonData.forEach(season => {
+                        const startA = (season.start / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const endA = (season.end / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const isActive = dayOfYear >= season.start && dayOfYear < season.end;
+
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r, startA, endA);
+                        ctx.strokeStyle = season.color;
+                        ctx.globalAlpha = isActive ? 0.8 : 0.25;
+                        ctx.lineWidth = w;
+                        ctx.stroke();
+
+                        if (isActive) {
+                            const midA = (startA + endA) / 2;
+                            ctx.save();
+                            ctx.translate(Math.cos(midA) * r, Math.sin(midA) * r);
+                            ctx.rotate(midA + HALF_PI);
+                            ctx.fillStyle = theme.textColor;
+                            ctx.font = '400 11px Montserrat';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.globalAlpha = 1;
+                            ctx.fillText(season.name.toUpperCase(), 0, 0);
+                            ctx.restore();
+                        }
+                    });
+                    ctx.globalAlpha = 1.0;
+                }
+
+                if (ring.type === 'daylight') {
+                    const amplitude = 2.7;
+                    const segments = 180;
+                    for (let i = 0; i < segments; i++) {
+                        const doy1 = (i / segments) * DAYS_IN_YEAR;
+                        const doy2 = ((i + 1) / segments) * DAYS_IN_YEAR;
+                        const a1 = (doy1 / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const a2 = (doy2 / DAYS_IN_YEAR) * TAU - HALF_PI;
+
+                        const hours = 12 + amplitude * Math.sin((doy1 - 80) * TAU / DAYS_IN_YEAR);
+                        const normalizedW = (hours / 16) * w;
+
+                        const isNear = Math.abs(doy1 - dayOfYear) < (DAYS_IN_YEAR / segments);
+                        ctx.beginPath();
+                        ctx.arc(0, 0, r, a1, a2 + 0.02);
+                        ctx.strokeStyle = getRingColor(ring, theme);
+                        ctx.globalAlpha = isNear ? 0.9 : 0.4;
+                        ctx.lineWidth = normalizedW;
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1.0;
+                }
+
                 ctx.restore();
             });
 
@@ -999,6 +1073,19 @@
                     body = `Date: ${closest.date.toLocaleDateString()}<br>Type: <span style="color:${typeColor}">${closest.type.toUpperCase()}</span>`;
                 }
                 else { title = "EVENTS"; body = "Hover markers for 2026 milestones"; }
+            } else if (ring.id === 'week') {
+                title = "WEEK"; body = `Week ${idx + 1} of 52`;
+            } else if (ring.type === 'seasons') {
+                const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                const season = seasonData.find(s => dayFromA >= s.start && dayFromA < s.end) || seasonData[0];
+                const progress = ((dayFromA - season.start) / (season.end - season.start) * 100).toFixed(0);
+                title = "SEASON"; body = `<span style="color:${season.color}">${season.name}</span> (${progress}% complete)`;
+            } else if (ring.type === 'daylight') {
+                const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                const hours = 12 + 2.7 * Math.sin((dayFromA - 80) * TAU / DAYS_IN_YEAR);
+                const h = Math.floor(hours);
+                const m = Math.round((hours - h) * 60);
+                title = "DAYLIGHT"; body = `~${h}h ${m}m of daylight<br><span style="opacity:0.6">Model: 40°N latitude</span>`;
             } else if (ring.id === 'hr') { title = "HOUR"; body = `${idx}:00`; }
             else if (ring.id === 'min') { title = "MINUTE"; body = `${idx}`; }
             tooltip.innerHTML = `<h3>${title}</h3><div class="content">${body}</div>`;
