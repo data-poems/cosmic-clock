@@ -554,6 +554,219 @@
             { id: 'planets', divisions: DAYS_IN_YEAR, r: 0.93, w: 18, color: '#cc9966', type: 'planets' }
         ];
 
+        // === RING RENDERER REGISTRY ===
+        // Each special ring type registers render() and tooltip() functions.
+        // Adding a new ring = add to rings[], ringRenderers, and getRingValue().
+        const ringRenderers = {
+            lunar: {
+                render(r, w, theme, extra) {
+                    const currentPhase = getMoonPhase(extra.now);
+                    const moonR = w/2 - 3;
+                    const moonBg = theme.isLight ? '#ddd' : '#111';
+                    for(let i=0; i<8; i++) {
+                        const a = (i/8) * TAU - HALF_PI;
+                        let pDiff = Math.abs((i/8) - currentPhase);
+                        if (pDiff > 0.5) pDiff = 1 - pDiff;
+                        const isActive = pDiff < 0.06;
+                        ctx.save();
+                        ctx.translate(Math.cos(a)*r, Math.sin(a)*r);
+                        ctx.beginPath(); ctx.arc(0, 0, moonR, 0, TAU);
+                        ctx.fillStyle = moonBg; ctx.fill();
+                        ctx.fillStyle = isActive ? theme.textColor : theme.textDim;
+                        if (i === 4) { ctx.beginPath(); ctx.arc(0, 0, moonR, 0, TAU); ctx.fill(); }
+                        else if (i === 2) { ctx.beginPath(); ctx.arc(0, 0, moonR, -HALF_PI, HALF_PI); ctx.fill(); }
+                        else if (i === 6) { ctx.beginPath(); ctx.arc(0, 0, moonR, HALF_PI, -HALF_PI); ctx.fill(); }
+                        else if (i !== 0) { ctx.beginPath(); ctx.arc(0, 0, 3, 0, TAU); ctx.fill(); }
+                        ctx.restore();
+                    }
+                },
+                tooltip(idx, dataA) {
+                    const p = ["New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous", "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"];
+                    return { title: "LUNAR PHASE", body: p[Math.floor((dataA / TAU) * 8) % 8] };
+                }
+            },
+            zodiac: {
+                render(r, w, theme, extra) {
+                    const zodiacColor = extra.ringColor;
+                    zodiacData.forEach((sign, i) => {
+                        const startA = (sign.start / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const signEnd = zodiacData[i+1] ? zodiacData[i+1].start : DAYS_IN_YEAR + zodiacData[0].start;
+                        const isActiveSign = (extra.dayOfYear >= sign.start && extra.dayOfYear < signEnd) ||
+                                            (sign.name === "Capricorn" && (extra.dayOfYear >= 356 || extra.dayOfYear < 20));
+                        if (isActiveSign) {
+                            ctx.beginPath(); ctx.arc(0, 0, r, startA, (signEnd/DAYS_IN_YEAR)*TAU - HALF_PI);
+                            ctx.strokeStyle = zodiacColor; ctx.globalAlpha = 0.4; ctx.lineWidth = w;
+                            if (theme.glowEnabled) { ctx.shadowBlur = 10; ctx.shadowColor = zodiacColor; }
+                            ctx.stroke(); resetShadow(); ctx.globalAlpha = 1.0;
+                        }
+                        ctx.save();
+                        const midA = startA + (Math.PI/12);
+                        ctx.translate(Math.cos(midA)*r, Math.sin(midA)*r);
+                        ctx.rotate(midA + HALF_PI);
+                        const s = w * 0.5;
+                        ctx.strokeStyle = isActiveSign ? theme.textColor : theme.textDim;
+                        ctx.lineWidth = isActiveSign ? 1.5 : 1;
+                        ctx.beginPath();
+                        sign.lines.forEach(l => {
+                            ctx.moveTo((sign.stars[l[0]][0]-0.5)*s, (sign.stars[l[0]][1]-0.5)*s);
+                            ctx.lineTo((sign.stars[l[1]][0]-0.5)*s, (sign.stars[l[1]][1]-0.5)*s);
+                        });
+                        ctx.stroke();
+                        sign.stars.forEach(star => {
+                            ctx.beginPath(); ctx.arc((star[0]-0.5)*s, (star[1]-0.5)*s, isActiveSign ? 2 : 1.5, 0, TAU);
+                            ctx.fillStyle = isActiveSign ? theme.textColor : theme.textDim; ctx.fill();
+                        });
+                        ctx.restore();
+                    });
+                },
+                tooltip(idx, dataA) {
+                    const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                    const sign = zodiacData.find((s,i) => {
+                        const next = zodiacData[i+1] ? zodiacData[i+1].start : DAYS_IN_YEAR + zodiacData[0].start;
+                        return (dayFromA >= s.start && dayFromA < next) || (s.name === "Capricorn" && (dayFromA >= 356 || dayFromA < 20));
+                    }) || zodiacData[0];
+                    return { title: "ZODIAC", body: sign.name };
+                }
+            },
+            events: {
+                render(r, w, theme, extra) {
+                    allEvents.forEach(ev => {
+                        const doy = (ev.date - YEAR_BASE) / MS_PER_DAY;
+                        const a = (doy / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const isToday = ev.date.toDateString() === extra.now.toDateString();
+                        const eventColor = eventColors[ev.type] || extra.ringColor;
+                        ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, isToday ? 6 : 4, 0, TAU);
+                        ctx.fillStyle = isToday ? theme.textColor : eventColor;
+                        if (isToday && theme.glowEnabled) { ctx.shadowBlur = 12; ctx.shadowColor = eventColor; }
+                        ctx.fill(); resetShadow();
+                    });
+                },
+                tooltip(idx, dataA) {
+                    const dCheck = (dataA / TAU) * DAYS_IN_YEAR;
+                    let closest = null; let minD = 3;
+                    allEvents.forEach(ev => {
+                        const ed = (ev.date - YEAR_BASE) / MS_PER_DAY;
+                        let d = Math.abs(ed - dCheck); if (d > 300) d = DAYS_IN_YEAR - d;
+                        if (d < minD) { minD = d; closest = ev; }
+                    });
+                    if (closest) {
+                        const typeColor = eventColors[closest.type] || '#3b82f6';
+                        return { title: closest.name, body: `Date: ${closest.date.toLocaleDateString()}<br>Type: <span style="color:${typeColor}">${closest.type.toUpperCase()}</span>` };
+                    }
+                    return { title: "EVENTS", body: "Hover markers for 2026 milestones" };
+                }
+            },
+            seasons: {
+                render(r, w, theme, extra) {
+                    seasonData.forEach(season => {
+                        const startA = (season.start / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const endA = (season.end / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const isActive = extra.dayOfYear >= season.start && extra.dayOfYear < season.end;
+                        ctx.beginPath(); ctx.arc(0, 0, r, startA, endA);
+                        ctx.strokeStyle = season.color; ctx.globalAlpha = isActive ? 0.8 : 0.25;
+                        ctx.lineWidth = w; ctx.stroke();
+                        if (isActive) {
+                            const midA = (startA + endA) / 2;
+                            ctx.save(); ctx.translate(Math.cos(midA)*r, Math.sin(midA)*r); ctx.rotate(midA + HALF_PI);
+                            ctx.fillStyle = theme.textColor; ctx.font = '400 11px Montserrat';
+                            ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.globalAlpha = 1;
+                            ctx.fillText(season.name.toUpperCase(), 0, 0); ctx.restore();
+                        }
+                    });
+                    ctx.globalAlpha = 1.0;
+                },
+                tooltip(idx, dataA) {
+                    const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                    const season = seasonData.find(s => dayFromA >= s.start && dayFromA < s.end) || seasonData[0];
+                    const progress = ((dayFromA - season.start) / (season.end - season.start) * 100).toFixed(0);
+                    return { title: "SEASON", body: `<span style="color:${season.color}">${season.name}</span> (${progress}% complete)` };
+                }
+            },
+            daylight: {
+                render(r, w, theme, extra) {
+                    const amplitude = 2.7, segments = 180;
+                    for (let i = 0; i < segments; i++) {
+                        const doy1 = (i / segments) * DAYS_IN_YEAR;
+                        const a1 = (doy1 / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const a2 = ((i+1) / segments) * TAU - HALF_PI;
+                        const hours = 12 + amplitude * Math.sin((doy1 - 80) * TAU / DAYS_IN_YEAR);
+                        const isNear = Math.abs(doy1 - extra.dayOfYear) < (DAYS_IN_YEAR / segments);
+                        ctx.beginPath(); ctx.arc(0, 0, r, a1, a2 + 0.02);
+                        ctx.strokeStyle = extra.ringColor; ctx.globalAlpha = isNear ? 0.9 : 0.4;
+                        ctx.lineWidth = (hours / 16) * w; ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1.0;
+                },
+                tooltip(idx, dataA) {
+                    const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                    const hours = 12 + 2.7 * Math.sin((dayFromA - 80) * TAU / DAYS_IN_YEAR);
+                    const h = Math.floor(hours), m = Math.round((hours - h) * 60);
+                    return { title: "DAYLIGHT", body: `~${h}h ${m}m of daylight<br><span style="opacity:0.6">Model: 40°N latitude</span>` };
+                }
+            },
+            showers: {
+                render(r, w, theme, extra) {
+                    meteorShowerData.forEach(shower => {
+                        const startA = (solLonToDoy(shower.activity[0]) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const endA = (solLonToDoy(shower.activity[1]) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const peakA = (solLonToDoy(shower.peakSolLon) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        const isActive = (extra.currentSolLon >= shower.activity[0] && extra.currentSolLon <= shower.activity[1]) ||
+                            (shower.activity[0] > shower.activity[1] && (extra.currentSolLon >= shower.activity[0] || extra.currentSolLon <= shower.activity[1]));
+                        ctx.beginPath(); ctx.arc(0, 0, r, startA, endA);
+                        ctx.strokeStyle = '#a855f7'; ctx.globalAlpha = isActive ? 0.7 : 0.15;
+                        ctx.lineWidth = w; ctx.stroke();
+                        ctx.beginPath(); ctx.arc(Math.cos(peakA)*r, Math.sin(peakA)*r, isActive ? 4 : 2, 0, TAU);
+                        ctx.fillStyle = isActive ? '#c084fc' : '#a855f7'; ctx.globalAlpha = isActive ? 1 : 0.4; ctx.fill();
+                    });
+                    ctx.globalAlpha = 1.0;
+                },
+                tooltip(idx, dataA) {
+                    const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                    let closest = null; let minD = 15;
+                    meteorShowerData.forEach(s => {
+                        const peakDoy = solLonToDoy(s.peakSolLon);
+                        let d = Math.abs(peakDoy - doyFromA);
+                        if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
+                        if (d < minD) { minD = d; closest = s; }
+                    });
+                    if (closest) return { title: "METEOR SHOWER", body: `${closest.name}<br>ZHR: ~${closest.zhr} meteors/hr` };
+                    return { title: "METEOR SHOWERS", body: "Hover peak markers for shower info" };
+                }
+            },
+            planets: {
+                render(r, w, theme, extra) {
+                    nakedEyePlanets.forEach(p => {
+                        const lon = norm(p.L + p.LR * extra.centuriesFromJ2000);
+                        const a = (solLonToDoy(lon) / DAYS_IN_YEAR) * TAU - HALF_PI;
+                        let elong = Math.abs(lon - extra.currentSolLon);
+                        if (elong > 180) elong = 360 - elong;
+                        const isVisible = elong > 15;
+                        ctx.beginPath(); ctx.arc(Math.cos(a)*r, Math.sin(a)*r, 5, 0, TAU);
+                        ctx.fillStyle = p.color; ctx.globalAlpha = isVisible ? 0.9 : 0.3; ctx.fill();
+                        ctx.font = '11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                        ctx.fillStyle = isVisible ? theme.textColor : theme.textDim;
+                        ctx.fillText(p.symbol, Math.cos(a)*r, Math.sin(a)*r - 10);
+                    });
+                    ctx.globalAlpha = 1.0;
+                },
+                tooltip(idx, dataA) {
+                    const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
+                    let closest = null; let minD = 15;
+                    const jd = julianDate(new Date());
+                    const T = (jd - 2451545.0) / 36525;
+                    nakedEyePlanets.forEach(p => {
+                        const pLon = norm(p.L + p.LR * T);
+                        const pDoy = solLonToDoy(pLon);
+                        let d = Math.abs(pDoy - doyFromA);
+                        if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
+                        if (d < minD) { minD = d; closest = { ...p, lon: pLon }; }
+                    });
+                    if (closest) return { title: `${closest.symbol} ${closest.name.toUpperCase()}`, body: `Ecliptic longitude: ${closest.lon.toFixed(1)}°` };
+                    return { title: "PLANETS", body: "Naked-eye planet positions" };
+                }
+            }
+        };
+
         // === RENDERING HELPERS ===
         function getMoonPhase(date) {
             const diffDays = (date.getTime() - KNOWN_NEW_MOON) / MS_PER_DAY;
@@ -759,11 +972,10 @@
                 ctx.translate(cx, cy);
                 ctx.rotate(rotation);
 
-                // Draw themed ring (background track + progress)
-                if (['min','hr','wday','day','month','week'].includes(ring.id)) {
+                // Draw themed ring (background track + progress for standard, track-only for special)
+                if (!ring.type) {
                     drawThemedRing(r, w, ringColor, val, theme, isHoveredRing);
                 } else {
-                    // For special rings (lunar, zodiac, events), just draw background
                     drawThemedRing(r, w, ringColor, 0, theme, isHoveredRing);
                 }
 
@@ -797,243 +1009,11 @@
                     });
                 }
 
-                if (ring.type === 'lunar') {
-                    const currentPhase = getMoonPhase(now);
-                    const moonR = w/2 - 3;
-                    const moonBg = theme.isLight ? '#ddd' : '#111';
-                    const moonActive = theme.textColor;
-                    const moonInactive = theme.textDim;
-
-                    for(let i=0; i<8; i++) {
-                        const a = (i/8) * TAU - HALF_PI;
-                        let pDiff = Math.abs((i/8) - currentPhase);
-                        if (pDiff > 0.5) pDiff = 1 - pDiff;
-                        const isActive = pDiff < 0.06;
-
-                        ctx.save();
-                        ctx.translate(Math.cos(a)*r, Math.sin(a)*r);
-
-                        // Background circle
-                        ctx.beginPath();
-                        ctx.arc(0, 0, moonR, 0, TAU);
-                        ctx.fillStyle = moonBg;
-                        ctx.fill();
-
-                        ctx.fillStyle = isActive ? moonActive : moonInactive;
-
-                        if (i === 0) {
-                            // New Moon - just background circle (already drawn)
-                        } else if (i === 4) {
-                            // Full Moon - filled circle
-                            ctx.beginPath();
-                            ctx.arc(0, 0, moonR, 0, TAU);
-                            ctx.fill();
-                        } else if (i === 2) {
-                            // First Quarter - right half
-                            ctx.beginPath();
-                            ctx.arc(0, 0, moonR, -HALF_PI, HALF_PI);
-                            ctx.fill();
-                        } else if (i === 6) {
-                            // Last Quarter - left half
-                            ctx.beginPath();
-                            ctx.arc(0, 0, moonR, HALF_PI, -HALF_PI);
-                            ctx.fill();
-                        } else {
-                            // Crescents (1,3,5,7) - small dot
-                            ctx.beginPath();
-                            ctx.arc(0, 0, 3, 0, TAU);
-                            ctx.fill();
-                        }
-
-                        ctx.restore();
-                    }
-                }
-
-                if (ring.type === 'zodiac') {
-                    const zodiacColor = getRingColor(ring, theme);
-                    zodiacData.forEach((sign, i) => {
-                        const startA = (sign.start / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const signEnd = zodiacData[i+1] ? zodiacData[i+1].start : DAYS_IN_YEAR + zodiacData[0].start;
-                        const isActiveSign = (dayOfYear >= sign.start && dayOfYear < signEnd) ||
-                                            (sign.name === "Capricorn" && (dayOfYear >= 356 || dayOfYear < 20));
-
-                        // Draw active sign highlight
-                        if (isActiveSign) {
-                            ctx.beginPath();
-                            ctx.arc(0, 0, r, startA, (signEnd/DAYS_IN_YEAR)*TAU - HALF_PI);
-                            ctx.strokeStyle = zodiacColor;
-                            ctx.globalAlpha = 0.4;
-                            ctx.lineWidth = w;
-                            if (theme.glowEnabled) {
-                                ctx.shadowBlur = 10;
-                                ctx.shadowColor = zodiacColor;
-                            }
-                            ctx.stroke();
-                            resetShadow();
-                            ctx.globalAlpha = 1.0;
-                        }
-
-                        // Draw constellation
-                        ctx.save();
-                        const midA = startA + (Math.PI/12);
-                        ctx.translate(Math.cos(midA)*r, Math.sin(midA)*r);
-                        ctx.rotate(midA + HALF_PI);
-
-                        // Reduced size for tighter constellation
-                        const s = w * 0.5;
-                        ctx.strokeStyle = isActiveSign ? theme.textColor : theme.textDim;
-                        ctx.lineWidth = isActiveSign ? 1.5 : 1;
-
-                        // Draw constellation lines
-                        ctx.beginPath();
-                        sign.lines.forEach(l => {
-                            const x1 = (sign.stars[l[0]][0] - 0.5) * s;
-                            const y1 = (sign.stars[l[0]][1] - 0.5) * s;
-                            const x2 = (sign.stars[l[1]][0] - 0.5) * s;
-                            const y2 = (sign.stars[l[1]][1] - 0.5) * s;
-                            ctx.moveTo(x1, y1);
-                            ctx.lineTo(x2, y2);
-                        });
-                        ctx.stroke();
-
-                        // Draw star dots
-                        sign.stars.forEach((star) => {
-                            ctx.beginPath();
-                            const sx = (star[0] - 0.5) * s;
-                            const sy = (star[1] - 0.5) * s;
-                            ctx.arc(sx, sy, isActiveSign ? 2 : 1.5, 0, TAU);
-                            ctx.fillStyle = isActiveSign ? theme.textColor : theme.textDim;
-                            ctx.fill();
-                        });
-
-                        ctx.restore();
+                // Dispatch to registered renderer for special ring types
+                if (ring.type && ringRenderers[ring.type]) {
+                    ringRenderers[ring.type].render(r, w, theme, {
+                        now, dayOfYear, ringColor, currentSolLon, centuriesFromJ2000
                     });
-                }
-
-                if (ring.type === 'events') {
-                    allEvents.forEach(ev => {
-                        const doy = (ev.date - YEAR_BASE) / MS_PER_DAY;
-                        const a = (doy / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const isToday = ev.date.toDateString() === now.toDateString();
-                        const eventColor = eventColors[ev.type] || getRingColor(ring, theme);
-
-                        ctx.beginPath();
-                        ctx.arc(Math.cos(a)*r, Math.sin(a)*r, isToday ? 6 : 4, 0, TAU);
-                        ctx.fillStyle = isToday ? theme.textColor : eventColor;
-                        if (isToday && theme.glowEnabled) {
-                            ctx.shadowBlur = 12;
-                            ctx.shadowColor = eventColor;
-                        }
-                        ctx.fill();
-                        resetShadow();
-                    });
-                }
-
-                if (ring.type === 'seasons') {
-                    seasonData.forEach(season => {
-                        const startA = (season.start / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const endA = (season.end / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const isActive = dayOfYear >= season.start && dayOfYear < season.end;
-
-                        ctx.beginPath();
-                        ctx.arc(0, 0, r, startA, endA);
-                        ctx.strokeStyle = season.color;
-                        ctx.globalAlpha = isActive ? 0.8 : 0.25;
-                        ctx.lineWidth = w;
-                        ctx.stroke();
-
-                        if (isActive) {
-                            const midA = (startA + endA) / 2;
-                            ctx.save();
-                            ctx.translate(Math.cos(midA) * r, Math.sin(midA) * r);
-                            ctx.rotate(midA + HALF_PI);
-                            ctx.fillStyle = theme.textColor;
-                            ctx.font = '400 11px Montserrat';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.globalAlpha = 1;
-                            ctx.fillText(season.name.toUpperCase(), 0, 0);
-                            ctx.restore();
-                        }
-                    });
-                    ctx.globalAlpha = 1.0;
-                }
-
-                if (ring.type === 'daylight') {
-                    const amplitude = 2.7;
-                    const segments = 180;
-                    for (let i = 0; i < segments; i++) {
-                        const doy1 = (i / segments) * DAYS_IN_YEAR;
-                        const doy2 = ((i + 1) / segments) * DAYS_IN_YEAR;
-                        const a1 = (doy1 / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const a2 = (doy2 / DAYS_IN_YEAR) * TAU - HALF_PI;
-
-                        const hours = 12 + amplitude * Math.sin((doy1 - 80) * TAU / DAYS_IN_YEAR);
-                        const normalizedW = (hours / 16) * w;
-
-                        const isNear = Math.abs(doy1 - dayOfYear) < (DAYS_IN_YEAR / segments);
-                        ctx.beginPath();
-                        ctx.arc(0, 0, r, a1, a2 + 0.02);
-                        ctx.strokeStyle = getRingColor(ring, theme);
-                        ctx.globalAlpha = isNear ? 0.9 : 0.4;
-                        ctx.lineWidth = normalizedW;
-                        ctx.stroke();
-                    }
-                    ctx.globalAlpha = 1.0;
-                }
-
-                if (ring.type === 'showers') {
-                    meteorShowerData.forEach(shower => {
-                        const startA = (solLonToDoy(shower.activity[0]) / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const endA = (solLonToDoy(shower.activity[1]) / DAYS_IN_YEAR) * TAU - HALF_PI;
-                        const peakA = (solLonToDoy(shower.peakSolLon) / DAYS_IN_YEAR) * TAU - HALF_PI;
-
-                        const isActive = (currentSolLon >= shower.activity[0] && currentSolLon <= shower.activity[1]) ||
-                            (shower.activity[0] > shower.activity[1] && (currentSolLon >= shower.activity[0] || currentSolLon <= shower.activity[1]));
-
-                        // Activity arc
-                        ctx.beginPath();
-                        ctx.arc(0, 0, r, startA, endA);
-                        ctx.strokeStyle = '#a855f7';
-                        ctx.globalAlpha = isActive ? 0.7 : 0.15;
-                        ctx.lineWidth = w;
-                        ctx.stroke();
-
-                        // Peak dot
-                        ctx.beginPath();
-                        ctx.arc(Math.cos(peakA) * r, Math.sin(peakA) * r, isActive ? 4 : 2, 0, TAU);
-                        ctx.fillStyle = isActive ? '#c084fc' : '#a855f7';
-                        ctx.globalAlpha = isActive ? 1 : 0.4;
-                        ctx.fill();
-                    });
-                    ctx.globalAlpha = 1.0;
-                }
-
-                if (ring.type === 'planets') {
-                    nakedEyePlanets.forEach(p => {
-                        const lon = norm(p.L + p.LR * centuriesFromJ2000);
-                        const a = (solLonToDoy(lon) / DAYS_IN_YEAR) * TAU - HALF_PI;
-
-                        // Elongation from sun determines visibility
-                        let elong = Math.abs(lon - currentSolLon);
-                        if (elong > 180) elong = 360 - elong;
-                        const isVisible = elong > 15; // roughly visible when >15° from sun
-
-                        ctx.beginPath();
-                        ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 5, 0, TAU);
-                        ctx.fillStyle = p.color;
-                        ctx.globalAlpha = isVisible ? 0.9 : 0.3;
-                        ctx.fill();
-
-                        // Planet symbol
-                        ctx.font = '11px sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.fillStyle = isVisible ? theme.textColor : theme.textDim;
-                        ctx.globalAlpha = isVisible ? 0.9 : 0.3;
-                        ctx.fillText(p.symbol, Math.cos(a) * r, Math.sin(a) * r - 10);
-                    });
-                    ctx.globalAlpha = 1.0;
                 }
 
                 ctx.restore();
@@ -1164,80 +1144,19 @@
             tooltip.style.display = 'block';
             if (!isMobile) { tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px'; }
             let title = ring.id.toUpperCase(); let body = `Index: ${idx + 1}`;
+
+            // Standard ring tooltips
             if (ring.id === 'month' && ring.labels[idx]) { title = "MONTH"; body = ring.labels[idx]; }
             else if (ring.id === 'wday' && ring.labels[idx]) { title = "WEEKDAY"; body = ring.labels[idx]; }
-            else if (ring.type === 'zodiac') {
-                const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
-                const sign = zodiacData.find((s,i) => {
-                    const next = zodiacData[i+1] ? zodiacData[i+1].start : DAYS_IN_YEAR + zodiacData[0].start;
-                    return (dayFromA >= s.start && dayFromA < next) || (s.name === "Capricorn" && (dayFromA >= 356 || dayFromA < 20));
-                }) || zodiacData[0];
-                title = "ZODIAC"; body = sign.name;
-            } else if (ring.type === 'lunar') {
-                const p = ["New Moon", "Waxing Crescent", "First Quarter", "Waxing Gibbous", "Full Moon", "Waning Gibbous", "Last Quarter", "Waning Crescent"];
-                title = "LUNAR PHASE"; body = p[Math.floor((dataA / (TAU)) * 8) % 8];
-            } else if (ring.type === 'events') {
-                const dCheck = (dataA / TAU) * DAYS_IN_YEAR;
-                let closest = null; let minD = 3;
-                allEvents.forEach(ev => {
-                    const ed = (ev.date - YEAR_BASE) / MS_PER_DAY;
-                    let d = Math.abs(ed - dCheck); if (d > 300) d = DAYS_IN_YEAR - d;
-                    if (d < minD) { minD = d; closest = ev; }
-                });
-                if (closest) {
-                    const typeColor = eventColors[closest.type] || '#3b82f6';
-                    title = closest.name;
-                    body = `Date: ${closest.date.toLocaleDateString()}<br>Type: <span style="color:${typeColor}">${closest.type.toUpperCase()}</span>`;
-                }
-                else { title = "EVENTS"; body = "Hover markers for 2026 milestones"; }
-            } else if (ring.id === 'week') {
-                title = "WEEK"; body = `Week ${idx + 1} of 52`;
-            } else if (ring.type === 'seasons') {
-                const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
-                const season = seasonData.find(s => dayFromA >= s.start && dayFromA < s.end) || seasonData[0];
-                const progress = ((dayFromA - season.start) / (season.end - season.start) * 100).toFixed(0);
-                title = "SEASON"; body = `<span style="color:${season.color}">${season.name}</span> (${progress}% complete)`;
-            } else if (ring.type === 'daylight') {
-                const dayFromA = (dataA / TAU) * DAYS_IN_YEAR;
-                const hours = 12 + 2.7 * Math.sin((dayFromA - 80) * TAU / DAYS_IN_YEAR);
-                const h = Math.floor(hours);
-                const m = Math.round((hours - h) * 60);
-                title = "DAYLIGHT"; body = `~${h}h ${m}m of daylight<br><span style="opacity:0.6">Model: 40°N latitude</span>`;
-            } else if (ring.type === 'showers') {
-                const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
-                let closest = null; let minD = 15;
-                meteorShowerData.forEach(s => {
-                    const peakDoy = solLonToDoy(s.peakSolLon);
-                    let d = Math.abs(peakDoy - doyFromA);
-                    if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
-                    if (d < minD) { minD = d; closest = s; }
-                });
-                if (closest) {
-                    title = "METEOR SHOWER";
-                    body = `${closest.name}<br>ZHR: ~${closest.zhr} meteors/hr`;
-                } else {
-                    title = "METEOR SHOWERS"; body = "Hover peak markers for shower info";
-                }
-            } else if (ring.type === 'planets') {
-                const doyFromA = (dataA / TAU) * DAYS_IN_YEAR;
-                let closest = null; let minD = 15;
-                const jd = julianDate(new Date());
-                const T = (jd - 2451545.0) / 36525;
-                nakedEyePlanets.forEach(p => {
-                    const pLon = norm(p.L + p.LR * T);
-                    const pDoy = solLonToDoy(pLon);
-                    let d = Math.abs(pDoy - doyFromA);
-                    if (d > DAYS_IN_YEAR / 2) d = DAYS_IN_YEAR - d;
-                    if (d < minD) { minD = d; closest = { ...p, lon: pLon }; }
-                });
-                if (closest) {
-                    title = `${closest.symbol} ${closest.name.toUpperCase()}`;
-                    body = `Ecliptic longitude: ${closest.lon.toFixed(1)}°`;
-                } else {
-                    title = "PLANETS"; body = "Naked-eye planet positions";
-                }
-            } else if (ring.id === 'hr') { title = "HOUR"; body = `${idx}:00`; }
+            else if (ring.id === 'week') { title = "WEEK"; body = `Week ${idx + 1} of 52`; }
+            else if (ring.id === 'hr') { title = "HOUR"; body = `${idx}:00`; }
             else if (ring.id === 'min') { title = "MINUTE"; body = `${idx}`; }
+            // Dispatch to registered renderer tooltip
+            else if (ring.type && ringRenderers[ring.type]) {
+                const tip = ringRenderers[ring.type].tooltip(idx, dataA);
+                title = tip.title; body = tip.body;
+            }
+
             tooltip.innerHTML = `<h3>${title}</h3><div class="content">${body}</div>`;
         }
 
