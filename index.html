@@ -156,7 +156,6 @@
         let width, height, cx, cy;
         let dpr = window.devicePixelRatio || 1;
         let interactionPos = null;
-        let parallaxX = 0, parallaxY = 0;
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let currentTheme = 'theme-bio';
         let isMobile = false;
@@ -1010,21 +1009,13 @@
             const currentSolLon = solarLongitude(jdNow);
             const centuriesFromJ2000 = (jdNow - 2451545.0) / 36525;
 
-            // 3D perspective drift + mouse parallax
-            if (!reducedMotion) {
-                const t = Date.now();
-                const driftX = 8 + 2 * Math.sin(t / 20000 * TAU);
-                const driftY = 1.5 * Math.cos(t / 26000 * TAU);
-                canvas.style.transform = `perspective(1200px) rotateX(${driftX + parallaxX}deg) rotateY(${driftY + parallaxY}deg)`;
-            }
-
-            // Per-ring wobble parameters
-            const wobbles = rings.map((ring, i) => {
+            // Armillary sphere: each ring has a fixed tilt angle and squeeze
+            // Inner rings are nearly flat; outer rings tilt more, each at a different angle
+            const armillary = rings.map((ring, i) => {
                 if (reducedMotion) return { squeeze: 1, tilt: 0 };
-                const intensity = 0.005 + (ring.r * 0.02);
-                const period = 15000 + i * 3000;
-                const squeeze = 1 - intensity * Math.sin(Date.now() / period * TAU);
-                const tilt = intensity * 0.3 * Math.cos(Date.now() / (period * 1.2) * TAU);
+                const depth = ring.r; // 0.18 to 0.93
+                const squeeze = 1 - depth * 0.06; // inner ~0.99, outer ~0.94
+                const tilt = (i * 0.12) - (rings.length * 0.06); // spread tilts around zero
                 return { squeeze, tilt };
             });
 
@@ -1046,7 +1037,7 @@
                 if (hoveredRingId && !isHoveredRing) ctx.globalAlpha = 0.6;
 
                 // Wobble: hovered ring lifts (squeeze → 1.0)
-                const wobble = isHoveredRing ? { squeeze: 1, tilt: 0 } : wobbles[ringIdx];
+                const wobble = isHoveredRing ? { squeeze: 1, tilt: 0 } : armillary[ringIdx];
 
                 // Draw themed ring (background track + progress for standard, track-only for special)
                 if (!ring.type) {
@@ -1262,11 +1253,6 @@
             const cx_ = e.touches ? e.touches[0].clientX : e.clientX;
             const cy_ = e.touches ? e.touches[0].clientY : e.clientY;
             interactionPos = { x: cx_ - rect.left, y: cy_ - rect.top };
-            // Mouse parallax for 3D perspective
-            if (!reducedMotion) {
-                parallaxX = ((cy_ / height) - 0.5) * 6;
-                parallaxY = ((cx_ / width) - 0.5) * -4;
-            }
         }
         // === EVENT LISTENERS ===
         canvas.addEventListener('mousemove', setPos);
