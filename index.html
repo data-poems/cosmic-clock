@@ -565,7 +565,7 @@
         let hoveredRingId = null;
         let hoveredSegmentIdx = null;
 
-        function getRingValue(ring, now, minProgress, hrProgress, yearProgress) {
+        function getRingValue(ring, now, minProgress, hrProgress, yearProgress, dayOfYear) {
             if (ring.id === 'min') return minProgress / 60;
             if (ring.id === 'hr') return hrProgress / 24;
             if (ring.id === 'wday') return (now.getDay() + hrProgress / 24) / 7;
@@ -740,7 +740,7 @@
                 const isHoveredRing = hoveredRingId === ring.id;
                 const ringColor = getRingColor(ring, theme);
 
-                const val = getRingValue(ring, now, minProgress, hrProgress, yearProgress);
+                const val = getRingValue(ring, now, minProgress, hrProgress, yearProgress, dayOfYear);
 
                 let rotation = ring.static ? 0 : -val * TAU;
 
@@ -1140,7 +1140,7 @@
                     const r = ring.r * maxR;
                     if (Math.abs(dist - r) < ring.w + 10) {
                         hoveredRingId = ring.id;
-                        const rv = getRingValue(ring, now, minProgress, hrProgress, yearProgress);
+                        const rv = getRingValue(ring, now, minProgress, hrProgress, yearProgress, dayOfYear);
                         let rot = ring.static ? 0 : -rv * TAU;
                         let dataA = normScreenAngle - rot;
                         while (dataA < 0) dataA += TAU; while (dataA > TAU) dataA -= TAU;
