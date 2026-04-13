@@ -180,7 +180,7 @@ body.theme-glass .theme-selector select {
 
 /* --- THEME: SKEUOMORPHISM --- */
 body.theme-skeuo {
-    --bg-color: #222;
+    --bg-color: #1a1a1a;
     --text-color: #eee;
     background: repeating-linear-gradient(45deg, #1a1a1a, #1a1a1a 10px, #222 10px, #222 20px);
 }
@@ -255,7 +255,7 @@ body.theme-skeuo-brass .key-item {
 
 /* --- THEME: SKEUOMORPHISM CHROME --- */
 body.theme-skeuo-chrome {
-    --bg-color: #1a1d21;
+    --bg-color: #12151a;
     --text-color: #e8ecf0;
     --accent-color: #5dadec;
     --glow-color: #4a9edd;
@@ -302,7 +302,7 @@ body.theme-skeuo-chrome .key-item {
 
 /* --- THEME: SKEUOMORPHISM COCKPIT --- */
 body.theme-skeuo-cockpit {
-    --bg-color: #0d0d0a;
+    --bg-color: #0a0a08;
     --text-color: #33ff33;
     --accent-color: #ff6600;
     --glow-color: #33ff33;
@@ -558,7 +558,7 @@ body.theme-skeuo-gunmetal .key-item { color: #6c757d; }
 
 /* --- THEME: SKEUOMORPHISM PLATINUM --- */
 body.theme-skeuo-platinum {
-    --bg-color: #f0f2f5;
+    --bg-color: #f5f5f5;
     --text-color: #3a3e42;
     --accent-color: #8899aa;
     --glow-color: #b8c4d0;
@@ -599,7 +599,7 @@ body.theme-skeuo-platinum .key-item { color: #4a5a6a; }
 
 /* --- THEME: SKEUOMORPHISM OBSIDIAN --- */
 body.theme-skeuo-obsidian {
-    --bg-color: #0a0a0c;
+    --bg-color: #080808;
     --text-color: #e0e0e8;
     --accent-color: #6a5acd;
     --glow-color: #8070e0;
