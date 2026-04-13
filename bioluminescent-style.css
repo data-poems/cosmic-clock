@@ -1,5 +1,4 @@
 :root {
-    --glow-color: #06b6d4;
     --bg-color: #050505;
     --text-color: #ffffff;
     --panel-bg: rgba(10, 10, 10, 0.85);
@@ -212,7 +211,6 @@ body.theme-skeuo-brass {
     --bg-color: #1a1408;
     --text-color: #f4d794;
     --accent-color: #d4a84b;
-    --glow-color: #b8860b;
     --panel-bg: linear-gradient(145deg, #2a2010, #1a1408);
     --border-color: #8b7355;
     background: radial-gradient(ellipse at center, #2a1f0f 0%, #1a1408 70%);
@@ -258,7 +256,6 @@ body.theme-skeuo-chrome {
     --bg-color: #12151a;
     --text-color: #e8ecf0;
     --accent-color: #5dadec;
-    --glow-color: #4a9edd;
     --panel-bg: linear-gradient(145deg, #2a2e33, #1a1d21);
     --border-color: #5a6570;
     background: radial-gradient(ellipse at center, #252a30 0%, #1a1d21 70%);
@@ -305,7 +302,6 @@ body.theme-skeuo-cockpit {
     --bg-color: #0a0a08;
     --text-color: #33ff33;
     --accent-color: #ff6600;
-    --glow-color: #33ff33;
     --panel-bg: linear-gradient(145deg, #1a1a14, #0d0d0a);
     --border-color: #3a3a2a;
     background: #0d0d0a;
@@ -363,7 +359,6 @@ body.theme-skeuo-bronze {
     --bg-color: #1a1612;
     --text-color: #cd9b6a;
     --accent-color: #8b5a2b;
-    --glow-color: #cd9b6a;
     --panel-bg: linear-gradient(145deg, #2a221a, #1a1612);
     --border-color: #6b4423;
     background: radial-gradient(ellipse at center, #2a201a 0%, #1a1612 70%);
@@ -404,7 +399,6 @@ body.theme-skeuo-copper {
     --bg-color: #1a110f;
     --text-color: #e8a87c;
     --accent-color: #b87333;
-    --glow-color: #e8a87c;
     --panel-bg: linear-gradient(145deg, #2a1a16, #1a110f);
     --border-color: #8b4513;
     background: radial-gradient(ellipse at center, #2a1814 0%, #1a110f 70%);
@@ -443,7 +437,6 @@ body.theme-skeuo-titanium {
     --bg-color: #14171a;
     --text-color: #c8d0d8;
     --accent-color: #6a7a8a;
-    --glow-color: #8899aa;
     --panel-bg: linear-gradient(145deg, #252a30, #14171a);
     --border-color: #4a5560;
     background: linear-gradient(135deg, #1a1e22 0%, #14171a 50%, #1a2025 100%);
@@ -481,7 +474,6 @@ body.theme-skeuo-rosegold {
     --bg-color: #1a1416;
     --text-color: #f0c8c8;
     --accent-color: #b76e79;
-    --glow-color: #e8b4b8;
     --panel-bg: linear-gradient(145deg, #2a2024, #1a1416);
     --border-color: #8b5a62;
     background: radial-gradient(ellipse at center, #251a1e 0%, #1a1416 70%);
@@ -521,7 +513,6 @@ body.theme-skeuo-gunmetal {
     --bg-color: #121416;
     --text-color: #9ca3ab;
     --accent-color: #5a6268;
-    --glow-color: #6c757d;
     --panel-bg: linear-gradient(145deg, #22262a, #121416);
     --border-color: #3a3e42;
     background: #121416;
@@ -561,7 +552,6 @@ body.theme-skeuo-platinum {
     --bg-color: #f5f5f5;
     --text-color: #3a3e42;
     --accent-color: #8899aa;
-    --glow-color: #b8c4d0;
     --panel-bg: linear-gradient(145deg, #ffffff, #e8ecf0);
     --border-color: #c0c8d0;
     background: linear-gradient(145deg, #f8fafc, #e8ecf0);
@@ -602,7 +592,6 @@ body.theme-skeuo-obsidian {
     --bg-color: #080808;
     --text-color: #e0e0e8;
     --accent-color: #6a5acd;
-    --glow-color: #8070e0;
     --panel-bg: linear-gradient(145deg, #18181c, #0a0a0c);
     --border-color: #2a2a35;
     background: linear-gradient(135deg, #0c0c10 0%, #0a0a0c 50%, #0e0e14 100%);
@@ -643,7 +632,6 @@ body.theme-skeuo-amber {
     --bg-color: #1a1408;
     --text-color: #ffd280;
     --accent-color: #ff9500;
-    --glow-color: #ffb84d;
     --panel-bg: linear-gradient(145deg, #2a2010, #1a1408);
     --border-color: #996300;
     background: radial-gradient(ellipse at center, #2a1f10 0%, #1a1408 70%);
@@ -685,7 +673,6 @@ body.theme-skeuo-jade {
     --bg-color: #0a1410;
     --text-color: #88d8b0;
     --accent-color: #00a86b;
-    --glow-color: #50c878;
     --panel-bg: linear-gradient(145deg, #142820, #0a1410);
     --border-color: #1a5040;
     background: radial-gradient(ellipse at center, #102018 0%, #0a1410 70%);
@@ -725,7 +712,6 @@ body.theme-skeuo-onyx {
     --bg-color: #0a0a0a;
     --text-color: #d4af37;
     --accent-color: #ffd700;
-    --glow-color: #d4af37;
     --panel-bg: linear-gradient(145deg, #1a1a1a, #0a0a0a);
     --border-color: #333333;
     background: #0a0a0a;
@@ -767,7 +753,6 @@ body.theme-swiss {
     --bg-color: #f0f0f0;
     --text-color: #000;
     --accent-color: #d52b1e;
-    --glow-color: #000;
     --panel-bg: #fff;
     --border-color: rgba(0, 0, 0, 0.2);
 }
@@ -799,7 +784,6 @@ body.theme-swiss .theme-selector select {
 body.theme-neu {
     --bg-color: #e0e5ec;
     --text-color: #444;
-    --glow-color: #a3b1c6;
     --panel-bg: #e0e5ec;
     --border-color: transparent;
 }
@@ -816,7 +800,6 @@ body.theme-swiss-railway {
     --bg-color: #ffffff;
     --text-color: #000000;
     --accent-color: #ff0000;
-    --glow-color: #000000;
     --panel-bg: #ffffff;
     --border-color: #000000;
 }
@@ -862,7 +845,6 @@ body.theme-swiss-poster {
     --bg-color: #1a1a1a;
     --text-color: #ffffff;
     --accent-color: #ff3b30;
-    --glow-color: #ff3b30;
     --panel-bg: #000000;
     --border-color: #ff3b30;
 }
@@ -905,7 +887,6 @@ body.theme-neu-light {
     --bg-color: #e0e5ec;
     --text-color: #444;
     --accent-color: #6d5dfc;
-    --glow-color: #a3b1c6;
     --panel-bg: #e0e5ec;
     --border-color: transparent;
 }
@@ -948,7 +929,6 @@ body.theme-neu-dark {
     --bg-color: #2d2d3a;
     --text-color: #e0e0e0;
     --accent-color: #7c6aef;
-    --glow-color: #1a1a24;
     --panel-bg: #2d2d3a;
     --border-color: transparent;
 }
@@ -988,7 +968,6 @@ body.theme-glass-frost {
     --bg-color: #dfe6e9;
     --text-color: #2d3436;
     --accent-color: #0984e3;
-    --glow-color: #74b9ff;
     --panel-bg: rgba(255, 255, 255, 0.25);
     --border-color: rgba(255, 255, 255, 0.4);
     background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -1036,7 +1015,6 @@ body.theme-glass-aurora {
     --bg-color: #0f0f23;
     --text-color: #ffffff;
     --accent-color: #00d9ff;
-    --glow-color: #00d9ff;
     --panel-bg: rgba(255, 255, 255, 0.08);
     --border-color: rgba(255, 255, 255, 0.15);
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -1101,7 +1079,6 @@ body.theme-bio {
     --text-color: #ffffff;
     --panel-bg: rgba(10, 10, 10, 0.85);
     --border-color: rgba(255, 255, 255, 0.15);
-    --glow-color: #06b6d4;
     --accent-color: #f59e0b;
 }
 

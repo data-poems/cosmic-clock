@@ -15,8 +15,7 @@
     <link rel="canonical" href="https://dr.eamer.dev/datavis/poems/cosmic-clock/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Tenor+Sans&family=Montserrat:wght@200;300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Tenor+Sans&family=Montserrat:wght@200;300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/datavis/poems/cosmic-clock/bioluminescent-style.css">
 </head>
 <body class="theme-bio">
@@ -68,7 +67,7 @@
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Astronomical</div>
     </div>
 
-    <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><i class="fa-solid fa-info" aria-hidden="true"></i></a>
+    <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><svg width="14" height="14" viewBox="0 0 192 512" fill="currentColor" aria-hidden="true"><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v224h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h32V256H32c-17.7 0-32-14.3-32-32z"/></svg></a>
     <div class="info-popup" id="infoPopup">
         <div class="info-popup-title">Cosmic Oracle</div>
         <a href="https://lukesteuber.com" target="_blank" rel="noopener noreferrer">lukesteuber.com</a>
@@ -119,7 +118,7 @@
             centerColor: '#ef4444',
             glowEnabled: true, shadowBlur: 15,
             ringStyle: 'glow', ringOpacity: 0.12, activeOpacity: 1.0,
-            bezelWidth: 3, bezelLight: 'rgba(255,255,255,0.4)', bezelDark: 'rgba(0,0,0,0.6)',
+            bezelLight: 'rgba(255,255,255,0.4)', bezelDark: 'rgba(0,0,0,0.6)',
             neuLightShadow: 'rgba(255,255,255,0.7)', neuDarkShadow: 'rgba(163,177,198,0.7)',
             secondHand: false
         };
@@ -168,14 +167,14 @@
                 bgColor: '#0a0a08', textColor: '#00ff00', textDim: 'rgba(0,255,0,0.6)',
                 lineColor: 'rgba(0,255,0,0.35)', centerColor: '#ff4500',
                 shadowBlur: 18, ringStyle: 'cockpit', ringOpacity: 0.18,
-                bezelWidth: 2, bezelLight: 'rgba(0,255,0,0.4)', bezelDark: 'rgba(0,0,0,0.75)'
+                bezelLight: 'rgba(0,255,0,0.4)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-bronze': {
                 ringColors: { time: '#cd7f32', calendar: '#228b22', celestial: '#daa520', events: '#4682b4' },
                 bgColor: '#151210', textColor: '#deb887', textDim: 'rgba(222,184,135,0.6)',
                 lineColor: 'rgba(205,127,50,0.25)', centerColor: '#cd7f32',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.26,
-                bezelWidth: 4, bezelLight: 'rgba(222,184,135,0.5)'
+                bezelLight: 'rgba(222,184,135,0.5)'
             },
             'theme-skeuo-copper': {
                 ringColors: { time: '#ff7f50', calendar: '#20b2aa', celestial: '#ffa07a', events: '#6495ed' },
@@ -189,35 +188,35 @@
                 bgColor: '#101418', textColor: '#d3d3d3', textDim: 'rgba(211,211,211,0.6)',
                 lineColor: 'rgba(135,206,235,0.2)', centerColor: '#87ceeb',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.22,
-                bezelWidth: 2, bezelLight: 'rgba(211,211,211,0.35)', bezelDark: 'rgba(0,0,0,0.55)'
+                bezelLight: 'rgba(211,211,211,0.35)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-rosegold': {
                 ringColors: { time: '#ffb6c1', calendar: '#98d8c8', celestial: '#f7dc6f', events: '#bb8fce' },
                 bgColor: '#1a1214', textColor: '#ffc0cb', textDim: 'rgba(255,192,203,0.6)',
                 lineColor: 'rgba(255,182,193,0.25)', centerColor: '#ff69b4',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
-                bezelWidth: 2, bezelLight: 'rgba(255,192,203,0.45)', bezelDark: 'rgba(0,0,0,0.5)'
+                bezelLight: 'rgba(255,192,203,0.45)', bezelDark: 'rgba(0,0,0,0.5)'
             },
             'theme-skeuo-gunmetal': {
                 ringColors: { time: '#dc143c', calendar: '#32cd32', celestial: '#ffa500', events: '#1e90ff' },
                 bgColor: '#0e1012', textColor: '#a9a9a9', textDim: 'rgba(169,169,169,0.6)',
                 lineColor: 'rgba(169,169,169,0.15)', centerColor: '#dc143c',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
-                bezelWidth: 4, bezelLight: 'rgba(169,169,169,0.25)', bezelDark: 'rgba(0,0,0,0.7)'
+                bezelLight: 'rgba(169,169,169,0.25)', bezelDark: 'rgba(0,0,0,0.7)'
             },
             'theme-skeuo-platinum': {
                 ringColors: { time: '#4169e1', calendar: '#2e8b57', celestial: '#ff6347', events: '#9932cc' },
                 bgColor: '#f5f5f5', textColor: '#2f4f4f', textDim: 'rgba(47,79,79,0.6)',
                 lineColor: 'rgba(65,105,225,0.2)', centerColor: '#4169e1',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.3, activeOpacity: 0.9,
-                bezelWidth: 2, bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)'
+                bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)'
             },
             'theme-skeuo-obsidian': {
                 ringColors: { time: '#9400d3', calendar: '#00ced1', celestial: '#ff00ff', events: '#7b68ee' },
                 bgColor: '#080808', textColor: '#e6e6fa', textDim: 'rgba(230,230,250,0.6)',
                 lineColor: 'rgba(148,0,211,0.25)', centerColor: '#9400d3',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.2,
-                bezelWidth: 2, bezelLight: 'rgba(230,230,250,0.2)', bezelDark: 'rgba(0,0,0,0.75)'
+                bezelLight: 'rgba(230,230,250,0.2)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-amber': {
                 ringColors: { time: '#ff8c00', calendar: '#32cd32', celestial: '#ffd700', events: '#ff4500' },
