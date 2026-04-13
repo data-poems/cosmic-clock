@@ -97,9 +97,8 @@
         const SYNODIC_MONTH = 29.53059;
         const DAYS_IN_YEAR = 365;
         const MOBILE_BREAKPOINT = 768;
-        // NOTE: New moon reference date. README says Jan 20; code uses Jan 18.
-        // NASA/USNO lists Jan 29, 2026 12:36 UTC as the actual new moon.
-        const KNOWN_NEW_MOON = new Date(2026, 0, 18).getTime();
+        // New moon reference: NASA/USNO Jan 29, 2026 12:36 UTC
+        const KNOWN_NEW_MOON = new Date(Date.UTC(2026, 0, 29, 12, 36)).getTime();
         // Day 0 of month 0 = Dec 31, 2025. Subtracting from a 2026 date gives 1-based day-of-year.
         const YEAR_BASE = new Date(2026, 0, 0);
 
@@ -120,7 +119,8 @@
             ringStyle: 'glow', ringOpacity: 0.12, activeOpacity: 1.0,
             bezelLight: 'rgba(255,255,255,0.4)', bezelDark: 'rgba(0,0,0,0.6)',
             neuLightShadow: 'rgba(255,255,255,0.7)', neuDarkShadow: 'rgba(163,177,198,0.7)',
-            secondHand: false
+            secondHand: false,
+            isLight: false
         };
 
         // Each theme only specifies what differs from defaults
@@ -135,7 +135,8 @@
                 ringColors: { time: '#0984e3', calendar: '#00b894', celestial: '#fdcb6e', events: '#6c5ce7' },
                 bgColor: '#dfe6e9', textColor: '#2d3436', textDim: 'rgba(45,52,54,0.5)',
                 lineColor: 'rgba(45,52,54,0.2)', centerColor: '#0984e3',
-                glowEnabled: false, shadowBlur: 8, ringStyle: 'soft', ringOpacity: 0.15, activeOpacity: 0.7
+                glowEnabled: false, shadowBlur: 8, ringStyle: 'soft', ringOpacity: 0.15, activeOpacity: 0.7,
+                isLight: true
             },
             'theme-glass-aurora': {
                 ringColors: { time: '#00d9ff', calendar: '#00ffa3', celestial: '#ff00ff', events: '#7c3aed' },
@@ -144,97 +145,98 @@
             },
             'theme-skeuo': {
                 ringColors: { time: '#ff6b6b', calendar: '#4ecdc4', celestial: '#ffe66d', events: '#6b5b95' },
-                bgColor: '#1a1a1a', textColor: '#f0f0f0', textDim: 'rgba(240,240,240,0.6)',
+                bgColor: '#1a1a1a', textColor: '#f0f0f0',
                 lineColor: 'rgba(255,255,255,0.2)', centerColor: '#ff6b6b',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.25
             },
             'theme-skeuo-brass': {
                 ringColors: { time: '#ffd700', calendar: '#50c878', celestial: '#ff8c00', events: '#4169e1' },
-                bgColor: '#1a1408', textColor: '#f4d794', textDim: 'rgba(244,215,148,0.6)',
+                bgColor: '#1a1408', textColor: '#f4d794',
                 lineColor: 'rgba(255,215,0,0.25)', centerColor: '#ffd700',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.28,
                 bezelLight: 'rgba(255,215,0,0.5)', bezelDark: 'rgba(0,0,0,0.65)'
             },
             'theme-skeuo-chrome': {
                 ringColors: { time: '#00bfff', calendar: '#7fff00', celestial: '#ff1493', events: '#9370db' },
-                bgColor: '#12151a', textColor: '#e8ecf0', textDim: 'rgba(232,236,240,0.6)',
+                bgColor: '#12151a', textColor: '#e8ecf0',
                 lineColor: 'rgba(0,191,255,0.2)', centerColor: '#00bfff',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.22,
                 bezelLight: 'rgba(255,255,255,0.45)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-cockpit': {
                 ringColors: { time: '#00ff00', calendar: '#00ffff', celestial: '#ff4500', events: '#ffff00' },
-                bgColor: '#0a0a08', textColor: '#00ff00', textDim: 'rgba(0,255,0,0.6)',
+                bgColor: '#0a0a08', textColor: '#00ff00',
                 lineColor: 'rgba(0,255,0,0.35)', centerColor: '#ff4500',
                 shadowBlur: 18, ringStyle: 'cockpit', ringOpacity: 0.18,
                 bezelLight: 'rgba(0,255,0,0.4)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-bronze': {
                 ringColors: { time: '#cd7f32', calendar: '#228b22', celestial: '#daa520', events: '#4682b4' },
-                bgColor: '#151210', textColor: '#deb887', textDim: 'rgba(222,184,135,0.6)',
+                bgColor: '#151210', textColor: '#deb887',
                 lineColor: 'rgba(205,127,50,0.25)', centerColor: '#cd7f32',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.26,
                 bezelLight: 'rgba(222,184,135,0.5)'
             },
             'theme-skeuo-copper': {
                 ringColors: { time: '#ff7f50', calendar: '#20b2aa', celestial: '#ffa07a', events: '#6495ed' },
-                bgColor: '#18100e', textColor: '#f4a460', textDim: 'rgba(244,164,96,0.6)',
+                bgColor: '#18100e', textColor: '#f4a460',
                 lineColor: 'rgba(255,127,80,0.25)', centerColor: '#ff7f50',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
                 bezelLight: 'rgba(255,160,122,0.5)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-titanium': {
                 ringColors: { time: '#87ceeb', calendar: '#98fb98', celestial: '#dda0dd', events: '#f0e68c' },
-                bgColor: '#101418', textColor: '#d3d3d3', textDim: 'rgba(211,211,211,0.6)',
+                bgColor: '#101418', textColor: '#d3d3d3',
                 lineColor: 'rgba(135,206,235,0.2)', centerColor: '#87ceeb',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.22,
                 bezelLight: 'rgba(211,211,211,0.35)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-rosegold': {
                 ringColors: { time: '#ffb6c1', calendar: '#98d8c8', celestial: '#f7dc6f', events: '#bb8fce' },
-                bgColor: '#1a1214', textColor: '#ffc0cb', textDim: 'rgba(255,192,203,0.6)',
+                bgColor: '#1a1214', textColor: '#ffc0cb',
                 lineColor: 'rgba(255,182,193,0.25)', centerColor: '#ff69b4',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
                 bezelLight: 'rgba(255,192,203,0.45)', bezelDark: 'rgba(0,0,0,0.5)'
             },
             'theme-skeuo-gunmetal': {
                 ringColors: { time: '#dc143c', calendar: '#32cd32', celestial: '#ffa500', events: '#1e90ff' },
-                bgColor: '#0e1012', textColor: '#a9a9a9', textDim: 'rgba(169,169,169,0.6)',
+                bgColor: '#0e1012', textColor: '#a9a9a9',
                 lineColor: 'rgba(169,169,169,0.15)', centerColor: '#dc143c',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
                 bezelLight: 'rgba(169,169,169,0.25)', bezelDark: 'rgba(0,0,0,0.7)'
             },
             'theme-skeuo-platinum': {
                 ringColors: { time: '#4169e1', calendar: '#2e8b57', celestial: '#ff6347', events: '#9932cc' },
-                bgColor: '#f5f5f5', textColor: '#2f4f4f', textDim: 'rgba(47,79,79,0.6)',
+                bgColor: '#f5f5f5', textColor: '#2f4f4f',
                 lineColor: 'rgba(65,105,225,0.2)', centerColor: '#4169e1',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.3, activeOpacity: 0.9,
-                bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)'
+                bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)',
+                isLight: true
             },
             'theme-skeuo-obsidian': {
                 ringColors: { time: '#9400d3', calendar: '#00ced1', celestial: '#ff00ff', events: '#7b68ee' },
-                bgColor: '#080808', textColor: '#e6e6fa', textDim: 'rgba(230,230,250,0.6)',
+                bgColor: '#080808', textColor: '#e6e6fa',
                 lineColor: 'rgba(148,0,211,0.25)', centerColor: '#9400d3',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.2,
                 bezelLight: 'rgba(230,230,250,0.2)', bezelDark: 'rgba(0,0,0,0.75)'
             },
             'theme-skeuo-amber': {
                 ringColors: { time: '#ff8c00', calendar: '#32cd32', celestial: '#ffd700', events: '#ff4500' },
-                bgColor: '#141008', textColor: '#ffd700', textDim: 'rgba(255,215,0,0.6)',
+                bgColor: '#141008', textColor: '#ffd700',
                 lineColor: 'rgba(255,140,0,0.3)', centerColor: '#ff8c00',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.24,
                 bezelLight: 'rgba(255,215,0,0.55)', bezelDark: 'rgba(0,0,0,0.55)'
             },
             'theme-skeuo-jade': {
                 ringColors: { time: '#00fa9a', calendar: '#40e0d0', celestial: '#adff2f', events: '#00bfff' },
-                bgColor: '#080f0c', textColor: '#98fb98', textDim: 'rgba(152,251,152,0.6)',
+                bgColor: '#080f0c', textColor: '#98fb98',
                 lineColor: 'rgba(0,250,154,0.25)', centerColor: '#00fa9a',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.22,
                 bezelLight: 'rgba(152,251,152,0.45)'
             },
             'theme-skeuo-onyx': {
                 ringColors: { time: '#ffd700', calendar: '#c0c0c0', celestial: '#ff0000', events: '#00ffff' },
-                bgColor: '#0a0a0a', textColor: '#ffd700', textDim: 'rgba(255,215,0,0.6)',
+                bgColor: '#0a0a0a', textColor: '#ffd700',
                 lineColor: 'rgba(255,215,0,0.3)', centerColor: '#ffd700',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.2,
                 bezelLight: 'rgba(255,215,0,0.45)', bezelDark: 'rgba(0,0,0,0.7)'
@@ -243,13 +245,15 @@
                 ringColors: { time: '#d52b1e', calendar: '#000000', celestial: '#d52b1e', events: '#000000' },
                 bgColor: '#f0f0f0', textColor: '#000000', textDim: 'rgba(0,0,0,0.5)',
                 lineColor: 'rgba(0,0,0,0.2)', centerColor: '#d52b1e',
-                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.15
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.15,
+                isLight: true
             },
             'theme-swiss-railway': {
                 ringColors: { time: '#ff0000', calendar: '#000000', celestial: '#000000', events: '#ff0000' },
                 bgColor: '#ffffff', textColor: '#000000', textDim: 'rgba(0,0,0,0.4)',
                 lineColor: 'rgba(0,0,0,0.15)', centerColor: '#ff0000',
-                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.1, secondHand: true
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.1, secondHand: true,
+                isLight: true
             },
             'theme-swiss-poster': {
                 ringColors: { time: '#ff3b30', calendar: '#ffffff', celestial: '#ff3b30', events: '#ffffff' },
@@ -260,13 +264,15 @@
                 ringColors: { time: '#6d5dfc', calendar: '#a3b1c6', celestial: '#6d5dfc', events: '#a3b1c6' },
                 bgColor: '#e0e5ec', textColor: '#444444', textDim: 'rgba(68,68,68,0.5)',
                 lineColor: 'rgba(68,68,68,0.15)', centerColor: '#6d5dfc',
-                glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.2, activeOpacity: 0.8
+                glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.2, activeOpacity: 0.8,
+                isLight: true
             },
             'theme-neu-light': {
                 ringColors: { time: '#6d5dfc', calendar: '#7f8c8d', celestial: '#9b59b6', events: '#3498db' },
                 bgColor: '#e0e5ec', textColor: '#444444', textDim: 'rgba(68,68,68,0.5)',
                 lineColor: 'rgba(68,68,68,0.1)', centerColor: '#6d5dfc',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.25, activeOpacity: 0.85,
+                isLight: true,
                 neuLightShadow: 'rgba(255,255,255,0.8)', neuDarkShadow: 'rgba(163,177,198,0.6)'
             },
             'theme-neu-dark': {
@@ -286,8 +292,17 @@
             if (overrides.ringColors) {
                 cachedThemeConfig.ringColors = { ...defaultThemeConfig.ringColors, ...overrides.ringColors };
             }
+            if (!overrides.textDim && cachedThemeConfig.textColor !== defaultThemeConfig.textColor) {
+                const rgb = hexToRgb(cachedThemeConfig.textColor);
+                cachedThemeConfig.textDim = `rgba(${rgb.r},${rgb.g},${rgb.b},0.6)`;
+            }
             cachedThemeName = currentTheme;
             return cachedThemeConfig;
+        }
+
+        function setThemeClass(themeName) {
+            document.body.classList.remove(...[...document.body.classList].filter(c => c.startsWith('theme-')));
+            document.body.classList.add(themeName);
         }
 
         // Restore saved theme from localStorage
@@ -295,13 +310,13 @@
             const saved = localStorage.getItem('cosmic-clock-theme');
             if (saved && themeConfigs[saved] !== undefined) {
                 currentTheme = saved;
-                document.body.className = saved;
+                setThemeClass(saved);
                 themeSelect.value = saved;
             }
         } catch(e) {}
 
         themeSelect.addEventListener('change', (e) => {
-            document.body.className = e.target.value;
+            setThemeClass(e.target.value);
             currentTheme = e.target.value;
             cachedThemeName = null;
             try { localStorage.setItem('cosmic-clock-theme', currentTheme); } catch(e) {}
@@ -506,6 +521,13 @@
             } : {r: 239, g: 68, b: 68};
         }
 
+        function drawCircle(x, y, r, fill, stroke, lineW) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, TAU);
+            if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+            if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lineW || 1; ctx.stroke(); }
+        }
+
         function resetShadow() {
             ctx.shadowBlur = 0;
             ctx.shadowColor = 'transparent';
@@ -516,7 +538,7 @@
         function getRingColor(ring, theme) {
             if (['min', 'hr'].includes(ring.id)) return theme.ringColors.time;
             if (['wday', 'day', 'month'].includes(ring.id)) return theme.ringColors.calendar;
-            if (['lunar', 'zodiac'].includes(ring.id) || ring.type === 'lunar' || ring.type === 'zodiac') return theme.ringColors.celestial;
+            if (ring.type === 'lunar' || ring.type === 'zodiac') return theme.ringColors.celestial;
             if (ring.type === 'events') return theme.ringColors.events;
             return ring.color;
         }
@@ -621,7 +643,7 @@
             const sec = now.getSeconds();
             const minProgress = now.getMinutes() + sec/60;
             const hrProgress = now.getHours() + minProgress/60;
-            const dayOfYear = (now - new Date(now.getFullYear(), 0, 0)) / MS_PER_DAY;
+            const dayOfYear = (now - YEAR_BASE) / MS_PER_DAY;
             const yearProgress = dayOfYear / DAYS_IN_YEAR;
 
             if (sec !== lastDisplaySecond) {
@@ -696,8 +718,7 @@
                 if (ring.type === 'lunar') {
                     const currentPhase = getMoonPhase(now);
                     const moonR = w/2 - 3;
-                    // Moon colors based on theme
-                    const moonBg = theme.bgColor === '#ffffff' || theme.bgColor === '#f0f0f0' || theme.bgColor === '#e0e5ec' || theme.bgColor === '#dfe6e9' ? '#ddd' : '#111';
+                    const moonBg = theme.isLight ? '#ddd' : '#111';
                     const moonActive = theme.textColor;
                     const moonInactive = theme.textDim;
 
@@ -794,7 +815,7 @@
                         ctx.stroke();
 
                         // Draw star dots
-                        sign.stars.forEach((star, si) => {
+                        sign.stars.forEach((star) => {
                             ctx.beginPath();
                             const sx = (star[0] - 0.5) * s;
                             const sy = (star[1] - 0.5) * s;
@@ -836,127 +857,70 @@
             const rgb = hexToRgb(centerColor);
 
             if (style === 'glow' || style === 'aurora') {
-                // Bioluminescent / Aurora: Multi-layered expanding pulse
                 for (let i = 0; i < 3; i++) {
                     const layer = (heartbeat + i * 0.33) % 1;
                     const size = maxR * (0.03 + layer * 0.08);
-                    const alpha = (1 - layer) * 0.6;
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, size, 0, TAU);
-                    ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
                     ctx.shadowBlur = 30 * (1 - layer);
                     ctx.shadowColor = centerColor;
-                    ctx.fill();
+                    drawCircle(cx, cy, size, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${(1 - layer) * 0.6})`);
                 }
                 resetShadow();
             } else if (style === 'beveled') {
-                // Skeuomorphic: Solid metallic orb with 3D highlights
                 const baseSize = maxR * 0.05;
-                // Outer shadow
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize + 2, 0, TAU);
-                ctx.fillStyle = 'rgba(0,0,0,0.5)';
-                ctx.fill();
-                // Main orb
+                drawCircle(cx, cy, baseSize + 2, 'rgba(0,0,0,0.5)');
                 const gradient = ctx.createRadialGradient(cx - baseSize * 0.3, cy - baseSize * 0.3, 0, cx, cy, baseSize);
                 gradient.addColorStop(0, `rgba(${rgb.r + 40}, ${rgb.g + 40}, ${rgb.b + 40}, 1)`);
                 gradient.addColorStop(0.7, centerColor);
                 gradient.addColorStop(1, `rgba(${Math.max(0, rgb.r - 40)}, ${Math.max(0, rgb.g - 40)}, ${Math.max(0, rgb.b - 40)}, 1)`);
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize, 0, TAU);
-                ctx.fillStyle = gradient;
-                ctx.fill();
-                // Pulsing glow ring
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize * (1 + heartbeat * 0.3), 0, TAU);
-                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${heartbeat * 0.4})`;
-                ctx.lineWidth = 3;
+                drawCircle(cx, cy, baseSize, gradient);
                 if (theme.glowEnabled) {
                     ctx.shadowBlur = 15 * heartbeat;
                     ctx.shadowColor = centerColor;
                 }
-                ctx.stroke();
+                drawCircle(cx, cy, baseSize * (1 + heartbeat * 0.3), null, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${heartbeat * 0.4})`, 3);
                 resetShadow();
             } else if (style === 'cockpit') {
-                // Cockpit: CRT scanline pulse with digital artifacts
                 const baseSize = maxR * 0.04;
-                // Main glow
                 for (let i = 0; i < 4; i++) {
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, baseSize + i * 4, 0, TAU);
-                    ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${(1 - i * 0.2) * heartbeat * 0.8})`;
-                    ctx.lineWidth = 2;
-                    ctx.stroke();
+                    drawCircle(cx, cy, baseSize + i * 4, null, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${(1 - i * 0.2) * heartbeat * 0.8})`, 2);
                 }
-                // Core dot
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize * 0.6, 0, TAU);
-                ctx.fillStyle = centerColor;
                 ctx.shadowBlur = 20;
                 ctx.shadowColor = centerColor;
-                ctx.fill();
+                drawCircle(cx, cy, baseSize * 0.6, centerColor);
                 resetShadow();
-                // Scanline effect
                 ctx.globalAlpha = 0.3 * heartbeat;
                 ctx.fillStyle = centerColor;
                 ctx.fillRect(cx - baseSize * 2, cy - 1 + (heartbeat * 8), baseSize * 4, 2);
                 ctx.globalAlpha = 1.0;
             } else if (style === 'neumorphic' || style === 'neumorphic-dark') {
-                // Neumorphic: Soft embossed pulse
                 const baseSize = maxR * 0.045;
-                // Outer inset shadow
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize + 3, 0, TAU);
-                ctx.fillStyle = theme.neuDarkShadow;
                 ctx.shadowBlur = 6;
                 ctx.shadowColor = theme.neuDarkShadow;
                 ctx.shadowOffsetX = 2;
                 ctx.shadowOffsetY = 2;
-                ctx.fill();
+                drawCircle(cx, cy, baseSize + 3, theme.neuDarkShadow);
                 resetShadow();
-                // Main core with gradient
                 const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, baseSize);
                 gradient.addColorStop(0, centerColor);
                 gradient.addColorStop(1, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.4 + heartbeat * 0.6})`);
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize, 0, TAU);
-                ctx.fillStyle = gradient;
-                ctx.fill();
+                drawCircle(cx, cy, baseSize, gradient);
             } else if (style === 'flat' || style === 'bold') {
-                // Swiss/Flat: Clean geometric pulse
                 const baseSize = maxR * 0.035;
-                // Outer ring
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize * (1.5 + heartbeat * 0.5), 0, TAU);
-                ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${heartbeat * 0.6})`;
-                ctx.lineWidth = style === 'bold' ? 4 : 2;
-                ctx.stroke();
-                // Solid core
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize, 0, TAU);
-                ctx.fillStyle = centerColor;
-                ctx.fill();
+                drawCircle(cx, cy, baseSize * (1.5 + heartbeat * 0.5), null, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${heartbeat * 0.6})`, style === 'bold' ? 4 : 2);
+                drawCircle(cx, cy, baseSize, centerColor);
             } else if (style === 'soft') {
-                // Glass Frost: Subtle diffuse pulse
                 const baseSize = maxR * 0.04;
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize, 0, TAU);
-                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.4 + heartbeat * 0.4})`;
                 ctx.shadowBlur = 12 * heartbeat;
                 ctx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.6)`;
-                ctx.fill();
+                drawCircle(cx, cy, baseSize, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.4 + heartbeat * 0.4})`);
                 resetShadow();
             } else {
-                // Default: Simple pulsing orb
                 const baseSize = maxR * 0.04;
-                ctx.beginPath();
-                ctx.arc(cx, cy, baseSize, 0, TAU);
-                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.3 + heartbeat * 0.5})`;
                 if (theme.glowEnabled) {
                     ctx.shadowBlur = 20 * heartbeat;
                     ctx.shadowColor = centerColor;
                 }
-                ctx.fill();
+                drawCircle(cx, cy, baseSize, `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${0.3 + heartbeat * 0.5})`);
                 resetShadow();
             }
 

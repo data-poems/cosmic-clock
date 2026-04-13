@@ -74,7 +74,7 @@ python3 -m http.server 8000
 ## Data Sources
 
 - **Astronomical events**: NASA JPL Horizons, International Astronomical Union
-- **Lunar phases**: Calculated from 2026 new moon dates (Jan 20, Feb 18, Mar 20...)
+- **Lunar phases**: Calculated from NASA/USNO 2026 new moon reference (Jan 29, 12:36 UTC)
 - **Zodiac constellations**: Traditional constellation patterns with accurate star positions
 - **Sports events**: Official Olympic Committee and FIFA schedules
 - **Holidays**: International calendar data
