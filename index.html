@@ -69,6 +69,8 @@
         <div class="key-item"><div class="key-dot" style="background: #fbbf24"></div>Daylight</div>
         <div class="key-item"><div class="key-dot" style="background: #a855f7"></div>Showers</div>
         <div class="key-item"><div class="key-dot" style="background: #cc9966"></div>Planets</div>
+        <div class="key-item"><div class="key-dot" style="background: #f472b6"></div>News</div>
+        <div class="key-item"><div class="key-dot" style="background: #06b6d4"></div>Space</div>
     </div>
 
     <a href="#" class="info-icon" id="infoIcon" aria-label="About Cosmic Clock"><svg width="14" height="14" viewBox="0 0 192 512" fill="currentColor" aria-hidden="true"><path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v224h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h32V256H32c-17.7 0-32-14.3-32-32z"/></svg></a>
@@ -169,7 +171,11 @@
             bezelLight: 'rgba(255,255,255,0.4)', bezelDark: 'rgba(0,0,0,0.6)',
             neuLightShadow: 'rgba(255,255,255,0.7)', neuDarkShadow: 'rgba(163,177,198,0.7)',
             secondHand: false,
-            isLight: false
+            isLight: false,
+            depthEnabled: true,
+            depthShadowIntensity: 0.15,
+            depthAtmosphericDim: 0.25,
+            depthSpecularIntensity: 0.15
         };
 
         // Each theme only specifies what differs from defaults
@@ -185,7 +191,7 @@
                 bgColor: '#dfe6e9', textColor: '#2d3436', textDim: 'rgba(45,52,54,0.5)',
                 lineColor: 'rgba(45,52,54,0.2)', centerColor: '#0984e3',
                 glowEnabled: false, shadowBlur: 8, ringStyle: 'soft', ringOpacity: 0.15, activeOpacity: 0.7,
-                isLight: true
+                isLight: true, depthEnabled: false
             },
             'theme-glass-aurora': {
                 ringColors: { time: '#00d9ff', calendar: '#00ffa3', celestial: '#ff00ff', events: '#7c3aed' },
@@ -260,7 +266,7 @@
                 lineColor: 'rgba(65,105,225,0.2)', centerColor: '#4169e1',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'beveled', ringOpacity: 0.3, activeOpacity: 0.9,
                 bezelLight: 'rgba(255,255,255,0.9)', bezelDark: 'rgba(0,0,0,0.2)',
-                isLight: true
+                isLight: true, depthEnabled: false
             },
             'theme-skeuo-obsidian': {
                 ringColors: { time: '#9400d3', calendar: '#00ced1', celestial: '#ff00ff', events: '#7b68ee' },
@@ -295,14 +301,14 @@
                 bgColor: '#f0f0f0', textColor: '#000000', textDim: 'rgba(0,0,0,0.5)',
                 lineColor: 'rgba(0,0,0,0.2)', centerColor: '#d52b1e',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.15,
-                isLight: true
+                isLight: true, depthEnabled: false
             },
             'theme-swiss-railway': {
                 ringColors: { time: '#ff0000', calendar: '#000000', celestial: '#000000', events: '#ff0000' },
                 bgColor: '#ffffff', textColor: '#000000', textDim: 'rgba(0,0,0,0.4)',
                 lineColor: 'rgba(0,0,0,0.15)', centerColor: '#ff0000',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'flat', ringOpacity: 0.1, secondHand: true,
-                isLight: true
+                isLight: true, depthEnabled: false
             },
             'theme-swiss-poster': {
                 ringColors: { time: '#ff3b30', calendar: '#ffffff', celestial: '#ff3b30', events: '#ffffff' },
@@ -314,7 +320,7 @@
                 bgColor: '#e0e5ec', textColor: '#444444', textDim: 'rgba(68,68,68,0.5)',
                 lineColor: 'rgba(68,68,68,0.15)', centerColor: '#6d5dfc',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.2, activeOpacity: 0.8,
-                isLight: true
+                isLight: true, depthEnabled: false
             },
             'theme-neu-light': {
                 ringColors: { time: '#6d5dfc', calendar: '#7f8c8d', celestial: '#9b59b6', events: '#3498db' },
@@ -322,14 +328,16 @@
                 lineColor: 'rgba(68,68,68,0.1)', centerColor: '#6d5dfc',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic', ringOpacity: 0.25, activeOpacity: 0.85,
                 isLight: true,
-                neuLightShadow: 'rgba(255,255,255,0.8)', neuDarkShadow: 'rgba(163,177,198,0.6)'
+                neuLightShadow: 'rgba(255,255,255,0.8)', neuDarkShadow: 'rgba(163,177,198,0.6)',
+                depthEnabled: false
             },
             'theme-neu-dark': {
                 ringColors: { time: '#7c6aef', calendar: '#5a5a6e', celestial: '#9b7aef', events: '#6a6aef' },
                 bgColor: '#2d2d3a', textColor: '#e0e0e0', textDim: 'rgba(224,224,224,0.5)',
                 lineColor: 'rgba(224,224,224,0.1)', centerColor: '#7c6aef',
                 glowEnabled: false, shadowBlur: 0, ringStyle: 'neumorphic-dark', ringOpacity: 0.2, activeOpacity: 0.9,
-                neuLightShadow: 'rgba(60,60,80,0.5)', neuDarkShadow: 'rgba(0,0,0,0.6)'
+                neuLightShadow: 'rgba(60,60,80,0.5)', neuDarkShadow: 'rgba(0,0,0,0.6)',
+                depthEnabled: false
             }
         };
 
@@ -400,6 +408,8 @@
             sports: '#6366f1',      // Indigo
             holiday: '#ec4899',     // Pink
             political: '#64748b',   // Slate
+            news: '#f472b6',        // Rose
+            space: '#06b6d4',       // Cyan
         };
 
         // Expanded events database
@@ -453,6 +463,22 @@
                 { date: new Date(2026, 10, 26), name: "Thanksgiving (US)", type: 'holiday' },
                 { date: new Date(2026, 11, 25), name: "Christmas Day", type: 'holiday' },
                 { date: new Date(2026, 11, 31), name: "New Year's Eve", type: 'holiday' },
+            ],
+            news: [
+                { date: new Date(2026, 0, 15), name: "Bulgaria Adopts Euro", type: 'news', desc: "Bulgaria joins the eurozone" },
+                { date: new Date(2026, 0, 22), name: "US Withdraws from WHO", type: 'news', desc: "Formal withdrawal from World Health Organization" },
+                { date: new Date(2026, 0, 25), name: "US Winter Storm", type: 'news', desc: "Major winter storm across central US" },
+                { date: new Date(2026, 1, 5), name: "New START Treaty Expires", type: 'news', desc: "US-Russia nuclear arms treaty expires" },
+                { date: new Date(2026, 1, 20), name: "Brazil Floods", type: 'news', desc: "Devastating floods in Minas Gerais" },
+                { date: new Date(2026, 1, 28), name: "Iran Conflict Begins", type: 'news', desc: "Military operations commence" },
+                { date: new Date(2026, 3, 2), name: "Cyclone Maila", type: 'news', desc: "Severe cyclone in the Pacific" },
+                { date: new Date(2026, 4, 14), name: "Eurovision 2026", type: 'news', desc: "Eurovision Song Contest" },
+            ],
+            space: [
+                { date: new Date(2026, 3, 1), name: "Artemis II Launch", type: 'space', desc: "First crewed Artemis mission orbiting the Moon" },
+                { date: new Date(2026, 5, 1), name: "BepiColombo at Mercury", type: 'space', desc: "ESA/JAXA probe enters Mercury orbit" },
+                { date: new Date(2026, 8, 1), name: "Roman Telescope Launch", type: 'space', desc: "Nancy Grace Roman Space Telescope" },
+                { date: new Date(2026, 9, 1), name: "Chang'e 7 Launch", type: 'space', desc: "China's lunar south pole mission" },
             ]
         };
 
@@ -460,7 +486,9 @@
         const allEvents = [
             ...eventsData.astronomical,
             ...eventsData.sports,
-            ...eventsData.cultural
+            ...eventsData.cultural,
+            ...eventsData.news,
+            ...eventsData.space
         ].sort((a,b) => a.date - b.date);
 
         // Accurate zodiac constellation data
@@ -651,7 +679,14 @@
                     });
                     if (closest) {
                         const typeColor = eventColors[closest.type] || '#3b82f6';
-                        return { title: closest.name, body: `Date: ${closest.date.toLocaleDateString()}<br>Type: <span style="color:${typeColor}">${closest.type.toUpperCase()}</span>` };
+                        const now = new Date();
+                        const diffDays = Math.round((closest.date - now) / MS_PER_DAY);
+                        const countdown = diffDays > 0 ? `In ${diffDays} days` : diffDays === 0 ? 'Today' : `${Math.abs(diffDays)} days ago`;
+                        const desc = closest.desc ? `<div class="tooltip-desc">${closest.desc}</div>` : '';
+                        return {
+                            title: `<span class="tooltip-type" style="color:${typeColor}">\u25CF ${closest.type.toUpperCase()}</span>`,
+                            body: `<div class="tooltip-event-name">${closest.name}</div><div class="tooltip-date">${closest.date.toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric'})}</div>${desc}<div class="tooltip-countdown">${countdown}</div>`
+                        };
                     }
                     return { title: "EVENTS", body: "Hover markers for 2026 milestones" };
                 }
@@ -918,6 +953,41 @@
                 resetShadow();
                 ctx.globalAlpha = 1.0;
             }
+
+            // === DEPTH PASSES (armillary sphere lighting) ===
+            if (theme.depthEnabled) {
+                // Pass 1: Downward shadow (outer rings float higher = longer shadow)
+                const shadowMag = r * 0.008;
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, TAU);
+                ctx.strokeStyle = 'rgba(0,0,0,1)';
+                ctx.lineWidth = w;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = shadowMag;
+                ctx.shadowBlur = shadowMag * 2.5;
+                ctx.shadowColor = `rgba(0,0,0,${theme.depthShadowIntensity})`;
+                ctx.globalAlpha = 0;
+                ctx.stroke();
+                resetShadow();
+
+                // Pass 2: Atmospheric dim on far side (upper semicircle recedes)
+                ctx.beginPath();
+                ctx.arc(0, 0, r, -Math.PI, 0);
+                ctx.strokeStyle = theme.bgColor;
+                ctx.globalAlpha = theme.depthAtmosphericDim;
+                ctx.lineWidth = w;
+                ctx.stroke();
+
+                // Pass 3: Specular highlight on near side (lower semicircle inner edge)
+                ctx.beginPath();
+                ctx.arc(0, 0, r - w/2 + 1, 0, Math.PI);
+                ctx.strokeStyle = '#ffffff';
+                ctx.globalAlpha = theme.depthSpecularIntensity;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.globalAlpha = 1.0;
+            }
         }
 
         // === MAIN DRAW LOOP ===
@@ -972,6 +1042,9 @@
                 ctx.translate(cx, cy);
                 ctx.rotate(rotation);
 
+                // Dim non-hovered rings when something is hovered
+                if (hoveredRingId && !isHoveredRing) ctx.globalAlpha = 0.6;
+
                 // Draw themed ring (background track + progress for standard, track-only for special)
                 if (!ring.type) {
                     drawThemedRing(r, w, ringColor, val, theme, isHoveredRing);
@@ -979,17 +1052,33 @@
                     drawThemedRing(r, w, ringColor, 0, theme, isHoveredRing);
                 }
 
-                // Hover highlight for hovered segment
+                // Hover highlight — pulsing glow + radial connector
                 if (isHoveredRing && hoveredSegmentIdx !== null) {
                     const a1 = (hoveredSegmentIdx / ring.divisions) * TAU - HALF_PI;
                     const a2 = ((hoveredSegmentIdx + 1) / ring.divisions) * TAU - HALF_PI;
+                    const hoverPulse = (Math.sin(Date.now() / 300 * TAU) + 1) / 2;
                     ctx.beginPath(); ctx.arc(0, 0, r, a1, a2);
                     ctx.strokeStyle = theme.textColor; ctx.lineWidth = w + 6;
                     if (theme.glowEnabled) {
-                        ctx.shadowBlur = 15; ctx.shadowColor = theme.textColor;
+                        ctx.shadowBlur = 10 + hoverPulse * 10; ctx.shadowColor = theme.textColor;
                     }
                     ctx.stroke();
                     resetShadow();
+
+                    // Radial connector for discrete-marker rings
+                    if (['events', 'showers', 'planets'].includes(ring.type)) {
+                        const midA = (a1 + a2) / 2;
+                        const outerX = Math.cos(midA) * r, outerY = Math.sin(midA) * r;
+                        const innerX = Math.cos(midA) * r * 0.3, innerY = Math.sin(midA) * r * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(outerX, outerY);
+                        ctx.quadraticCurveTo(outerX * 0.5, outerY * 0.5 - 10, innerX, innerY);
+                        ctx.strokeStyle = theme.textColor;
+                        ctx.globalAlpha = 0.25 + hoverPulse * 0.15;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                    }
                 }
 
                 if (ring.labels) {
@@ -1141,7 +1230,7 @@
 
         // === INTERACTION / TOOLTIP ===
         function showTooltipContent(ring, idx, x, y, dataA) {
-            tooltip.style.display = 'block';
+            tooltip.classList.add('visible');
             if (!isMobile) { tooltip.style.left = x + 'px'; tooltip.style.top = y + 'px'; }
             let title = ring.id.toUpperCase(); let body = `Index: ${idx + 1}`;
 
@@ -1160,7 +1249,7 @@
             tooltip.innerHTML = `<h3>${title}</h3><div class="content">${body}</div>`;
         }
 
-        function hideTooltip() { tooltip.style.display = 'none'; hoveredRingId = null; hoveredSegmentIdx = null; }
+        function hideTooltip() { tooltip.classList.remove('visible'); hoveredRingId = null; hoveredSegmentIdx = null; }
         function setPos(e) {
             const rect = canvas.getBoundingClientRect();
             const cx_ = e.touches ? e.touches[0].clientX : e.clientX;
